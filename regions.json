@@ -1,0 +1,20 @@
+{
+  "regions": [
+    { "id": "header-logo", "kind": "text", "grid": "A0:C0", "note": "Header text block" },
+    { "id": "header-nav", "kind": "chrome", "grid": "D0:J0", "note": "Navigation links block" },
+    { "id": "candidate-list-header", "kind": "text", "grid": "A1:D1", "note": "Table headers block" },
+    { "id": "candidate-list", "kind": "text", "grid": "A2:D6", "note": "List block" },
+    { "id": "profile-photo", "kind": "chrome", "grid": "E1:F3", "note": "Solid color block", "codeDrawn": true },
+    { "id": "profile-name", "kind": "text", "grid": "E4:F4", "note": "Name block" },
+    { "id": "biography", "kind": "text", "grid": "E5:F5", "note": "Biography text block" },
+    { "id": "key-skills", "kind": "text", "grid": "E6:F7", "note": "Key skills block" },
+    { "id": "work-environment-photo", "kind": "chrome", "grid": "F1:H2", "note": "Solid color block", "codeDrawn": true },
+    { "id": "biography-quote", "kind": "text", "grid": "I1:J2", "note": "Quote block" },
+    { "id": "experience", "kind": "text", "grid": "G3:J5", "note": "Experience block" },
+    { "id": "graphic-square-1", "kind": "chrome", "grid": "G6:H7", "note": "Solid color block", "codeDrawn": true },
+    { "id": "education", "kind": "text", "grid": "I6:J7", "note": "Education block" },
+    { "id": "project-photo-1", "kind": "chrome", "grid": "E8:F9", "note": "Solid color block", "codeDrawn": true },
+    { "id": "project-photo-2", "kind": "chrome", "grid": "G7:H9", "note": "Solid color block", "codeDrawn": true },
+    { "id": "awards", "kind": "text", "grid": "I8:J9", "note": "Awards block" }
+  ]
+}

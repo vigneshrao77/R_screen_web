@@ -1,0 +1,7 @@
+{
+  "name": "Resume Screening Agent",
+  "description": "Enterprise AI candidate resume screening platform integrated with automated workflow pipelines, detailed candidate assessments, and ATS scoring.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

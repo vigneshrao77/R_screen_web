@@ -1,0 +1,64 @@
+{
+  "seedKey": "6bfa4de2",
+  "scope": "direction",
+  "mode": "operate",
+  "buildPath": { "value": "comp", "toggle": true },
+  "canonCard": {
+    "title": "Standard SaaS Dashboard",
+    "thesis": "The category standard: a generic SaaS dashboard.",
+    "palette": "Light gray background, white cards, blue primary buttons, green/red status pills.",
+    "materials": "Rounded corners, drop shadows, repetitive icon boxes, standard system fonts.",
+    "firstViewport": "A side navigation panel, a top header with search and profile, and a main content area filled with statistic cards and a basic data table.",
+    "honestRisk": "Familiar but exactly what the brief asked to avoid. It will not feel premium or human-designed."
+  },
+  "options": [
+    {
+      "id": "assigned",
+      "title": "The Exhibition Catalog",
+      "thesis": "Treats each candidate like a curated work. Expansive whitespace, elegant typography, and a restrained focus on individual merit, refusing the noisy, metric-heavy SaaS dashboard.",
+      "palette": "Achromatic text fields (pure white and deep black) with color confined strictly to hairline band edges for status (derived from Cloud Edge).",
+      "materials": "Sharp edges, crisp subtle borders, no shadows. Information is structured in clean tables and tight editorial columns. Scores use a fixed magnitude ramp for visual weight (derived from Star Atlas).",
+      "firstViewport": "A stripped-back, focused table of uploaded resumes. Selecting a candidate opens a pristine, full-height review panel with comfortable reading measures, akin to an exhibition catalog entry.",
+      "honestRisk": "The high contrast and lack of typical UI affordances (cards, pills) might require a brief adjustment period for users accustomed to standard SaaS tools.",
+      "raises": [
+        "Color confined to hairline band edges while the text field stays achromatic (from Cloud Edge)",
+        "Fixed magnitude ramp for scoring visual weight (from Star Atlas)"
+      ],
+      "comp": ".impeccable/mocks/decision/assigned.png"
+    }
+  ],
+  "challengers": [
+    {
+      "id": "studio-dumbar-identity",
+      "title": "Studio Dumbar Identity",
+      "thesis": "Intersecting diagonal colored bars as a structural grid.",
+      "verdict": "declined",
+      "keptLines": ["Restack from horizontal rows to vertical columns as width shrinks."]
+    },
+    {
+      "id": "notation-diagram-systems-star-atlas",
+      "title": "Star Atlas",
+      "thesis": "Celestial star atlas chart with magnitude dot sizes.",
+      "verdict": "declined",
+      "keptLines": ["Fixed magnitude ramp for scoring visual weight."]
+    },
+    {
+      "id": "textiles-weave-drape-fashion-drawcord-transforming-cape",
+      "title": "Transforming Cape",
+      "thesis": "Silk cape transforming via drawcords.",
+      "verdict": "declined",
+      "keptLines": ["Trace the entity through each transformation."]
+    },
+    {
+      "id": "clouds-storms-auroras-iridescent-cloud-edge",
+      "title": "Iridescent Cloud Edge",
+      "thesis": "Diffracting sunlight through droplets with pastel bands.",
+      "verdict": "declined",
+      "keptLines": ["Color confined to hairline band edges while text field stays achromatic."]
+    }
+  ],
+  "reroll": {
+    "enabled": true,
+    "steer": ["safer", "bolder"]
+  }
+}
