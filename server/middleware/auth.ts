@@ -1,26 +1,22 @@
 import { Request, Response, NextFunction } from 'express';
 import { db } from '../db.js';
 import { Recruiter } from '../../src/types/index.js';
+import jwt from 'jsonwebtoken';
 
 export interface AuthenticatedRequest extends Request {
   user?: Recruiter;
 }
 
-// In-memory sessions mapped to tokens
-const sessions = new Map<string, { userId: string; expiresAt: number }>();
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-key-for-development';
 
 export function createSession(userId: string): string {
-  const token = `session_${Math.random().toString(36).substring(2)}_${Date.now()}`;
   // 7 days expiration
-  sessions.set(token, {
-    userId,
-    expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000
-  });
-  return token;
+  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '7d' });
 }
 
 export function revokeSession(token: string): void {
-  sessions.delete(token);
+  // Stateless JWTs cannot be easily revoked without a blacklist or DB update.
+  // The client will remove the token from localStorage.
 }
 
 export async function authMiddleware(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<any> {
@@ -33,14 +29,10 @@ export async function authMiddleware(req: AuthenticatedRequest, res: Response, n
     return res.status(401).json({ error: 'Authentication required. Please log in.' });
   }
 
-  const session = sessions.get(token);
-  if (!session || session.expiresAt < Date.now()) {
-    if (session) sessions.delete(token);
-    return res.status(401).json({ error: 'Session expired. Please log in again.' });
-  }
-
   try {
-    const user = await db.getUserById(session.userId);
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
+
+    const user = await db.getUserById(decoded.userId);
     if (!user) {
       return res.status(401).json({ error: 'User account not found.' });
     }
@@ -55,7 +47,10 @@ export async function authMiddleware(req: AuthenticatedRequest, res: Response, n
 
     next();
   } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      return res.status(401).json({ error: 'Session expired. Please log in again.' });
+    }
     console.error('Auth middleware error:', error);
-    return res.status(500).json({ error: 'Authentication service error.' });
+    return res.status(401).json({ error: 'Invalid authentication token.' });
   }
 }

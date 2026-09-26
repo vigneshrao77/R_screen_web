@@ -999,6 +999,15 @@
   "auditLogs": [
     {
       "recruiterEmail": "recruiter@company.com",
+      "action": "RECRUITER_LOGOUT",
+      "entityType": "auth",
+      "entityId": "usr-admin-1",
+      "details": "Recruiter Sarah Jenkins (Lead HR) logged out",
+      "id": "aud-b69f4f4c-4cce-4775-8cc3-6f2195f62285",
+      "timestamp": "2026-09-26T13:41:54.557Z"
+    },
+    {
+      "recruiterEmail": "recruiter@company.com",
       "action": "SCREENING_COMPLETED",
       "entityType": "screening",
       "entityId": "scr-bc112fbb-03b7-4f8f-a2e3-458f1a54877f",
