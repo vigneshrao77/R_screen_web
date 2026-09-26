@@ -109,14 +109,6 @@ export interface AuditLog {
   details: string;
 }
 
-export interface SystemSettings {
-  n8nWebhookUrl: string;
-  n8nEnabled: boolean;
-  geminiModel: string;
-  companyName: string;
-  defaultJobId: string;
-}
-
 export interface DashboardStats {
   totalScreenings: number;
   completedScreenings: number;

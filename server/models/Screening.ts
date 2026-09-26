@@ -2,9 +2,10 @@ import mongoose, { Schema, Document } from 'mongoose';
 import { ICandidate } from './Candidate.js';
 
 export interface IScreening extends Document {
-  candidateId: mongoose.Types.ObjectId;
-  candidate?: ICandidate; // Populated field
-  jobId: mongoose.Types.ObjectId;
+  id: string;
+  candidateId: any;
+  candidate?: any;
+  jobId: any;
   jobTitle: string;
   status: 'pending' | 'extracting' | 'n8n_triggered' | 'ai_evaluating' | 'completed' | 'failed';
   statusMessage?: string;
@@ -12,10 +13,10 @@ export interface IScreening extends Document {
   retryCount: number;
   result: any | null;
   n8nExecution: any | null;
-  recruiterId: mongoose.Types.ObjectId;
+  recruiterId: any;
   recruiterEmail: string;
   createdAt: Date;
-  completedAt?: Date | null;
+  completedAt?: any;
 }
 
 const ScreeningSchema = new Schema<IScreening>({
@@ -38,11 +39,11 @@ const ScreeningSchema = new Schema<IScreening>({
   completedAt: { type: Date, default: null }
 }, {
   toJSON: {
-    transform: (_, ret) => {
-      ret.id = ret._id.toString();
-      ret.candidateId = ret.candidateId.toString();
-      ret.jobId = ret.jobId.toString();
-      ret.recruiterId = ret.recruiterId.toString();
+    transform: (_, ret: any) => {
+      ret.id = ret._id ? ret._id.toString() : ret.id;
+      if (ret.candidateId) ret.candidateId = ret.candidateId.toString();
+      if (ret.jobId) ret.jobId = ret.jobId.toString();
+      if (ret.recruiterId) ret.recruiterId = ret.recruiterId.toString();
       delete ret._id;
       delete ret.__v;
     }
@@ -60,4 +61,4 @@ ScreeningSchema.virtual('candidate', {
 ScreeningSchema.set('toObject', { virtuals: true });
 ScreeningSchema.set('toJSON', { virtuals: true });
 
-export const Screening = mongoose.models.Screening || mongoose.model<IScreening>('Screening', ScreeningSchema);
+export const Screening: mongoose.Model<IScreening> = (mongoose.models.Screening as mongoose.Model<IScreening>) || mongoose.model<IScreening>('Screening', ScreeningSchema);

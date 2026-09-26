@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IAuditLog extends Document {
+  id: string;
   timestamp: Date;
   recruiterEmail: string;
   action: string;
@@ -22,7 +23,7 @@ const AuditLogSchema = new Schema<IAuditLog>({
   details: { type: String, required: true }
 }, {
   toJSON: {
-    transform: (_, ret) => {
+    transform: (_, ret: any) => {
       ret.id = ret._id.toString();
       delete ret._id;
       delete ret.__v;
@@ -30,4 +31,4 @@ const AuditLogSchema = new Schema<IAuditLog>({
   }
 });
 
-export const AuditLog = mongoose.models.AuditLog || mongoose.model<IAuditLog>('AuditLog', AuditLogSchema);
+export const AuditLog: mongoose.Model<IAuditLog> = (mongoose.models.AuditLog as mongoose.Model<IAuditLog>) || mongoose.model<IAuditLog>('AuditLog', AuditLogSchema);

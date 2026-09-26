@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 export interface IUser extends Document {
+  id: string;
   email: string;
   name: string;
   role: 'admin' | 'recruiter';
@@ -19,7 +20,7 @@ const UserSchema = new Schema<IUser>({
 }, {
   timestamps: true,
   toJSON: {
-    transform: (_, ret) => {
+    transform: (_, ret: any) => {
       ret.id = ret._id.toString();
       delete ret._id;
       delete ret.__v;
@@ -38,4 +39,4 @@ UserSchema.methods.comparePassword = async function(candidatePassword: string): 
   return bcrypt.compare(candidatePassword, this.passwordHash);
 };
 
-export const User = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
+export const User: mongoose.Model<IUser> = (mongoose.models.User as mongoose.Model<IUser>) || mongoose.model<IUser>('User', UserSchema);

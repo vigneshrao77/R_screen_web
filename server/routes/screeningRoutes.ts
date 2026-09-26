@@ -60,13 +60,13 @@ router.post('/upload', upload.single('resume'), async (req: AuthenticatedRequest
     }
 
     // Check target job
-    const settings = await db.getSettings();
-    const targetJobId = jobId || (settings ? settings.defaultJobId : null);
-    
-    let targetJob = targetJobId ? await db.getJobById(targetJobId) : null;
+    let targetJob = null;
+    if (jobId) {
+      targetJob = await db.getJobById(jobId);
+    }
     if (!targetJob) {
       const jobs = await db.getJobs();
-      targetJob = jobs[0];
+      targetJob = jobs.find(j => j.active) || jobs[0];
     }
     
     if (!targetJob) {
@@ -79,7 +79,7 @@ router.post('/upload', upload.single('resume'), async (req: AuthenticatedRequest
       // Find if they already have a screening for this job
       const screenings = await db.getScreenings();
       const existingScreening = screenings.find(
-        s => s.candidateId === existingCandidate.id && s.jobId === targetJob.id
+        s => String(s.candidateId) === String(existingCandidate.id) && String(s.jobId) === String(targetJob.id)
       );
 
       return res.status(409).json({
@@ -171,7 +171,7 @@ router.get('/', async (req: AuthenticatedRequest, res: Response): Promise<any> =
   }
 
   if (jobId) {
-    list = list.filter(s => s.jobId === jobId);
+    list = list.filter(s => String(s.jobId) === String(jobId));
   }
 
   if (recommendation) {
@@ -217,7 +217,7 @@ router.get('/:id', async (req: AuthenticatedRequest, res: Response): Promise<any
     return res.status(404).json({ error: 'Screening record not found.' });
   }
 
-  const job = await db.getJobById(screening.jobId);
+  const job = await db.getJobById(String(screening.jobId));
 
   return res.json({
     ...screening,
@@ -255,7 +255,7 @@ router.get('/:id/resume', async (req: AuthenticatedRequest, res: Response): Prom
     return res.status(404).json({ error: 'Screening record not found' });
   }
 
-  const candidate = await db.getCandidateById(screening.candidateId);
+  const candidate = await db.getCandidateById(String(screening.candidateId));
   if (!candidate || !candidate.resumeFilename) {
     return res.status(404).json({ error: 'Resume file not found for this candidate' });
   }

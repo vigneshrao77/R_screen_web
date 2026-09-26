@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IJob extends Document {
+  id: string;
   title: string;
   location: string;
   experienceLevel: string;
@@ -30,7 +31,7 @@ const JobSchema = new Schema<IJob>({
   createdAt: { type: Date, default: Date.now }
 }, {
   toJSON: {
-    transform: (_, ret) => {
+    transform: (_, ret: any) => {
       ret.id = ret._id.toString();
       delete ret._id;
       delete ret.__v;
@@ -38,4 +39,4 @@ const JobSchema = new Schema<IJob>({
   }
 });
 
-export const Job = mongoose.models.Job || mongoose.model<IJob>('Job', JobSchema);
+export const Job: mongoose.Model<IJob> = (mongoose.models.Job as mongoose.Model<IJob>) || mongoose.model<IJob>('Job', JobSchema);

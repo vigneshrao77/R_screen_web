@@ -8,7 +8,6 @@ import { Job, IJob } from './models/Job.js';
 import { Candidate, ICandidate } from './models/Candidate.js';
 import { Screening, IScreening } from './models/Screening.js';
 import { AuditLog, IAuditLog } from './models/AuditLog.js';
-import { Settings, ISettings } from './models/Settings.js';
 import { JobDescription } from '../src/types/index.js';
 import bcrypt from 'bcryptjs';
 
@@ -83,19 +82,6 @@ async function seedDatabase() {
       active: true
     });
     await defaultJob.save();
-  }
-
-  const settingsCount = await Settings.countDocuments();
-  if (settingsCount === 0) {
-    console.log('[MongoDB] Seeding default settings...');
-    const defaultJob = await Job.findOne();
-    await Settings.create({
-      n8nWebhookUrl: process.env.N8N_WEBHOOK_URL || '',
-      n8nEnabled: !!process.env.N8N_WEBHOOK_URL,
-      geminiModel: 'gemini-3.8-flash',
-      companyName: 'Apex Human Capital Systems',
-      defaultJobId: defaultJob ? defaultJob.id : ''
-    });
   }
 }
 
@@ -217,23 +203,6 @@ class Database {
   public async getAuditLogs(limit = 100) {
     const logs = await AuditLog.find().sort({ timestamp: -1 }).limit(limit);
     return logs.map(l => l.toJSON());
-  }
-
-  // Settings
-  public async getSettings() {
-    const set = await Settings.findOne();
-    return set ? set.toJSON() : null;
-  }
-
-  public async updateSettings(updates: any) {
-    let set = await Settings.findOne();
-    if (set) {
-      Object.assign(set, updates);
-      await set.save();
-    } else {
-      set = await Settings.create(updates);
-    }
-    return set.toJSON();
   }
 }
 

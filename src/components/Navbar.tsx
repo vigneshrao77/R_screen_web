@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   Briefcase,
   History,
-  Settings,
   LogOut,
   Menu,
   X
@@ -18,8 +17,7 @@ export type ActiveTab =
   | 'screen'
   | 'candidates'
   | 'jobs'
-  | 'history'
-  | 'settings';
+  | 'history';
 
 interface NavbarProps {
   activeTab: ActiveTab;
@@ -36,8 +34,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
     { id: 'screen', label: 'Screen', icon: <FileText className="w-4 h-4" strokeWidth={1.8} /> },
     { id: 'candidates', label: 'Candidates', icon: <Users className="w-4 h-4" strokeWidth={1.8} /> },
     { id: 'jobs', label: 'Jobs', icon: <Briefcase className="w-4 h-4" strokeWidth={1.8} /> },
-    { id: 'history', label: 'History', icon: <History className="w-4 h-4" strokeWidth={1.8} /> },
-    { id: 'settings', label: 'Settings', icon: <Settings className="w-4 h-4" strokeWidth={1.8} /> }
+    { id: 'history', label: 'History', icon: <History className="w-4 h-4" strokeWidth={1.8} /> }
   ];
 
   const handleNavClick = (id: ActiveTab) => {

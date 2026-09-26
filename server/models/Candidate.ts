@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface ICandidate extends Document {
+  id: string;
   fullName: string;
   email: string;
   phone: string;
@@ -23,7 +24,7 @@ const CandidateSchema = new Schema<ICandidate>({
 }, {
   timestamps: true,
   toJSON: {
-    transform: (_, ret) => {
+    transform: (_, ret: any) => {
       ret.id = ret._id.toString();
       delete ret._id;
       delete ret.__v;
@@ -31,4 +32,4 @@ const CandidateSchema = new Schema<ICandidate>({
   }
 });
 
-export const Candidate = mongoose.models.Candidate || mongoose.model<ICandidate>('Candidate', CandidateSchema);
+export const Candidate: mongoose.Model<ICandidate> = (mongoose.models.Candidate as mongoose.Model<ICandidate>) || mongoose.model<ICandidate>('Candidate', CandidateSchema);

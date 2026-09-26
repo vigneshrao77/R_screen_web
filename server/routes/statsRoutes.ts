@@ -47,7 +47,7 @@ router.get('/', async (_req: AuthenticatedRequest, res: Response) => {
     rejectCount,
     averageAtsScore: avgAts,
     averageFitRating: avgFit,
-    recentScreenings: screenings.slice(0, 10)
+    recentScreenings: screenings.slice(0, 10) as any
   };
 
   return res.json(stats);

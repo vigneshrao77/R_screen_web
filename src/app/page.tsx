@@ -9,8 +9,6 @@ import { CandidateList } from '../components/CandidateList';
 import { CandidateDetail } from '../components/CandidateDetail';
 import { JobCriteria } from '../components/JobCriteria';
 import { ScreeningHistory } from '../components/ScreeningHistory';
-import { WorkflowSettings } from '../components/WorkflowSettings';
-import { AuditLogView } from '../components/AuditLogView';
 import { LoginView } from '../components/LoginView';
 import { RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -111,11 +109,6 @@ export default function Home() {
               {activeTab === 'history' && (
                 <ScreeningHistory onSelectCandidate={handleSelectCandidate} />
               )}
-
-              {activeTab === 'settings' && <WorkflowSettings />}
-
-              {/* Default to settings for old audit routing temporarily if caught */}
-              {activeTab === 'audit' as any && <WorkflowSettings />}
             </motion.div>
           )}
         </AnimatePresence>

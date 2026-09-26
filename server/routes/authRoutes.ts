@@ -40,7 +40,7 @@ router.post('/login', async (req: Request, res: Response): Promise<any> => {
         email: user.email,
         name: user.name,
         role: user.role,
-        lastLoginAt: user.lastLoginAt
+        lastLoginAt: user.lastLoginAt ? new Date(user.lastLoginAt).toISOString() : new Date().toISOString()
       }
     });
   } catch (error) {
@@ -87,7 +87,7 @@ router.post('/register', async (req: Request, res: Response): Promise<any> => {
         email: user.email,
         name: user.name,
         role: user.role,
-        lastLoginAt: user.lastLoginAt
+        lastLoginAt: user.lastLoginAt ? new Date(user.lastLoginAt).toISOString() : new Date().toISOString()
       }
     });
   } catch (error) {

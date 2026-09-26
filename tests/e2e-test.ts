@@ -1,24 +1,28 @@
-import { db } from '../server/db.js';
+import { db, connectDB } from '../server/db.js';
 import { extractTextFromPdf } from '../server/pdfService.js';
 import { evaluateResumeWithGemini } from '../server/gemini.js';
 import { processScreening } from '../server/screeningPipeline.js';
 import fs from 'fs';
 import path from 'path';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 async function runEndToEndTests() {
   console.log('=== STARTING AUTOMATED RESUME SCREENING E2E VERIFICATION ===\n');
+  await connectDB();
 
   // Test 1: Verify Seed Database & Recruiter Auth
   console.log('Step 1: Testing Recruiter Authentication & Database state...');
-  const user = db.getUserByEmail('recruiter@company.com');
+  const user = await db.getUserByEmail('recruiter@company.com');
   if (!user) throw new Error('Default recruiter user not found in DB');
-  const validPass = db.verifyPassword(user, 'Recruiter2026!');
+  const validPass = await db.verifyPassword(user, 'Recruiter2026!');
   if (!validPass) throw new Error('Password verification failed for recruiter');
   console.log('✓ Recruiter authentication verified.');
 
   // Test 2: Verify Job Description criteria
   console.log('\nStep 2: Checking Job Description benchmarks...');
-  const jobs = db.getJobs();
+  const jobs = await db.getJobs();
   if (jobs.length === 0) throw new Error('No jobs found in DB');
   const aiJob = jobs[0];
   console.log(`✓ Active target job: "${aiJob.title}" with ${aiJob.requiredSkills.length} required skills.`);
@@ -75,7 +79,7 @@ startxref
   const uploadPath = path.join(process.cwd(), 'uploads', 'resumes', resumeFilename);
   fs.writeFileSync(uploadPath, pdfBuffer);
 
-  const candidate = db.addCandidate({
+  const candidate = await db.addCandidate({
     fullName: testCandidateName,
     email: testEmail,
     phone: testPhone,
@@ -85,7 +89,7 @@ startxref
     extractedTextLength: extractedText.length
   });
 
-  const screening = db.addScreening({
+  const screening = await db.addScreening({
     candidateId: candidate.id,
     candidate,
     jobId: aiJob.id,
@@ -151,7 +155,7 @@ startxref
 
   // Test 6: Verify Duplicate Detection
   console.log('\nStep 6: Testing duplicate candidate protection...');
-  const duplicate = db.findCandidateByEmailOrPhone(testEmail, testPhone);
+  const duplicate = await db.findCandidateByEmailOrPhone(testEmail, testPhone);
   if (!duplicate) throw new Error('Duplicate check failed: candidate should exist');
   console.log(`✓ Duplicate successfully caught for email: ${testEmail}`);
 
@@ -165,11 +169,12 @@ startxref
 
   // Test 8: Verify Audit Logging
   console.log('\nStep 8: Checking compliance audit trail...');
-  const logs = db.getAuditLogs(20);
+  const logs = await db.getAuditLogs(20);
   const relevantLogs = logs.filter(l => l.entityId === screening.id);
   console.log(`✓ Found ${relevantLogs.length} audit trail records for screening ${screening.id}`);
 
   console.log('\n=== ALL END-TO-END CRITICAL TESTS PASSED! ===');
+  process.exit(0);
 }
 
 runEndToEndTests().catch(err => {

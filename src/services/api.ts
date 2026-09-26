@@ -3,7 +3,6 @@ import {
   Candidate,
   JobDescription,
   DashboardStats,
-  SystemSettings,
   AuditLog,
   Recruiter
 } from '../types/index';
@@ -143,25 +142,6 @@ export const api = {
   // Stats
   async getStats(): Promise<DashboardStats> {
     return request<DashboardStats>('/api/stats');
-  },
-
-  // Settings
-  async getSettings(): Promise<SystemSettings> {
-    return request<SystemSettings>('/api/settings');
-  },
-
-  async updateSettings(settings: Partial<SystemSettings>): Promise<SystemSettings> {
-    return request<SystemSettings>('/api/settings', {
-      method: 'POST',
-      body: JSON.stringify(settings)
-    });
-  },
-
-  async testN8nConnection(url?: string): Promise<{ success: boolean; status?: number; message: string }> {
-    return request<{ success: boolean; status?: number; message: string }>('/api/settings/test-n8n', {
-      method: 'POST',
-      body: JSON.stringify({ url })
-    });
   },
 
   // Audit

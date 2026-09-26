@@ -1,12 +1,17 @@
-import { db } from '../server/db.js';
+import { db, connectDB } from '../server/db.js';
 import { processScreening } from '../server/screeningPipeline.js';
 import fs from 'fs';
 import path from 'path';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 async function seedRealCandidates() {
   console.log('Seeding initial candidates with real Gemini evaluations...');
-  const user = db.getUserByEmail('recruiter@company.com')!;
-  const job = db.getJobs()[0];
+  await connectDB();
+  const user = (await db.getUserByEmail('recruiter@company.com'))!;
+  const jobs = await db.getJobs();
+  const job = jobs[0];
 
   const candidatesData = [
     {
@@ -87,7 +92,7 @@ startxref
   ];
 
   for (const c of candidatesData) {
-    if (db.findCandidateByEmailOrPhone(c.email, c.phone)) {
+    if (await db.findCandidateByEmailOrPhone(c.email, c.phone)) {
       console.log(`Candidate ${c.name} already in DB`);
       continue;
     }
@@ -96,7 +101,7 @@ startxref
     const filePath = path.join(process.cwd(), 'uploads', 'resumes', filename);
     fs.writeFileSync(filePath, Buffer.from(c.pdf));
 
-    const candidate = db.addCandidate({
+    const candidate = await db.addCandidate({
       fullName: c.name,
       email: c.email,
       phone: c.phone,
@@ -106,7 +111,7 @@ startxref
       extractedTextLength: 0
     });
 
-    const screening = db.addScreening({
+    const screening = await db.addScreening({
       candidateId: candidate.id,
       candidate,
       jobId: job.id,
@@ -125,6 +130,7 @@ startxref
     await processScreening(screening.id, user.email);
     console.log(`✓ Processed ${c.name}`);
   }
+  process.exit(0);
 }
 
 seedRealCandidates().catch(console.error);

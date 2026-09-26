@@ -1,5 +1,4 @@
 import { N8nExecutionRecord } from '../src/types/index.js';
-import { db } from './db.js';
 
 export interface TriggerN8nParams {
   fullName: string;
@@ -10,14 +9,13 @@ export interface TriggerN8nParams {
 }
 
 export async function triggerN8nWorkflow(params: TriggerN8nParams): Promise<N8nExecutionRecord> {
-  const settings = db.getSettings();
-  const webhookUrl = settings.n8nWebhookUrl?.trim();
+  const webhookUrl = process.env.N8N_WEBHOOK_URL?.trim();
 
-  if (!webhookUrl || !settings.n8nEnabled) {
+  if (!webhookUrl) {
     return {
       triggeredAt: new Date().toISOString(),
       status: 'bypassed',
-      details: 'n8n webhook URL not configured or integration disabled. Direct AI screening active.'
+      details: 'n8n webhook URL not configured in environment. Direct AI screening active.'
     };
   }
 

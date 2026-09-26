@@ -46,11 +46,11 @@ export async function authMiddleware(req: AuthenticatedRequest, res: Response, n
     }
 
     req.user = {
-      id: user._id ? user._id.toString() : (user.id || ''),
+      id: user.id || (user as any)._id?.toString() || '',
       email: user.email,
       name: user.name,
       role: user.role,
-      lastLoginAt: user.lastLoginAt
+      lastLoginAt: user.lastLoginAt ? new Date(user.lastLoginAt).toISOString() : new Date().toISOString()
     };
 
     next();

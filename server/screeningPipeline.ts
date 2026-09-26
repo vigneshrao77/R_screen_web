@@ -17,12 +17,12 @@ export async function processScreening(screeningId: string, recruiterEmail: stri
     throw new Error(`Screening ${screeningId} not found`);
   }
 
-  const job = await db.getJobById(screening.jobId);
+  const job = await db.getJobById(String(screening.jobId));
   if (!job) {
     throw new Error(`Associated job ${screening.jobId} not found`);
   }
 
-  const candidate = await db.getCandidateById(screening.candidateId);
+  const candidate = await db.getCandidateById(String(screening.candidateId));
   if (!candidate) {
     throw new Error(`Candidate ${screening.candidateId} not found`);
   }
@@ -46,7 +46,7 @@ export async function processScreening(screeningId: string, recruiterEmail: stri
     console.log(`[Screening Pipeline] Extracting text for ${candidate.fullName}...`);
     const extractedText = await extractTextFromPdf(pdfBuffer);
 
-    await db.updateCandidate(candidate.id, {
+    await db.updateCandidate(candidate.id || (candidate as any)._id?.toString(), {
       extractedTextLength: extractedText.length
     });
 
@@ -98,7 +98,7 @@ export async function processScreening(screeningId: string, recruiterEmail: stri
       details: `Screened candidate ${candidate.fullName} for role ${job.title}. Result: ${structuredResult.recommendation}, ATS: ${structuredResult.ats_score}/100, Fit: ${structuredResult.overall_fit_rating}/10.`
     });
 
-    return updated!;
+    return updated as any;
   } catch (err: any) {
     console.error(`[Screening Pipeline] Error processing ${screeningId}:`, err);
     const updated = await db.updateScreening(screeningId, {
@@ -116,6 +116,6 @@ export async function processScreening(screeningId: string, recruiterEmail: stri
       details: `Screening failed for candidate ${candidate.fullName}: ${err.message}`
     });
 
-    return updated!;
+    return updated as any;
   }
 }

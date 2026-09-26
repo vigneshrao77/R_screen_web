@@ -6,7 +6,6 @@ import authRoutes from './server/routes/authRoutes.js';
 import screeningRoutes from './server/routes/screeningRoutes.js';
 import jobRoutes from './server/routes/jobRoutes.js';
 import statsRoutes from './server/routes/statsRoutes.js';
-import settingsRoutes from './server/routes/settingsRoutes.js';
 import auditRoutes from './server/routes/auditRoutes.js';
 import { connectDB } from './server/db.js';
 
@@ -34,7 +33,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/screenings', screeningRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/stats', statsRoutes);
-app.use('/api/settings', settingsRoutes);
 app.use('/api/audit-logs', auditRoutes);
 
 // Setup frontend serving
