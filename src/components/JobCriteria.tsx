@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { JobDescription } from '../types/index';
 import { api } from '../services/api';
 import {
@@ -7,7 +8,8 @@ import {
   RefreshCw,
   MapPin,
   Clock,
-  Layers
+  Layers,
+  X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -28,6 +30,27 @@ export const JobCriteria: React.FC = () => {
   const [newResponsibilities, setNewResponsibilities] = useState('');
   const [newEducation, setNewEducation] = useState("Bachelor's degree in CS, IT, or equivalent experience.");
   const [saving, setSaving] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Lock background scroll and handle Escape key when modal is open
+  useEffect(() => {
+    if (showCreateModal) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') setShowCreateModal(false);
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    }
+  }, [showCreateModal]);
 
   const fetchJobs = async () => {
     try {
@@ -375,46 +398,57 @@ export const JobCriteria: React.FC = () => {
         </div>
       </div>
 
-      {/* Create Modal */}
-      <AnimatePresence>
-        {showCreateModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style={{ background: 'rgba(0,0,0,0.4)' }}
-          >
+      {/* Add Job Modal - Rendered via Portal to cover the full viewport cleanly */}
+      {mounted && createPortal(
+        <AnimatePresence>
+          {showCreateModal && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="rounded-xl max-w-xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto"
-              style={{
-                background: 'var(--color-surface)',
-                boxShadow: 'var(--shadow-lg)',
+              onClick={(e) => {
+                if (e.target === e.currentTarget) setShowCreateModal(false);
               }}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="create-job-title"
+              className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+              style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.65)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+              }}
             >
-            <div className="flex items-center justify-between pb-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
-              <h2 id="create-job-title" className="text-[15px] font-semibold" style={{ color: 'var(--color-text-primary)' }}>
-                Add Job Criteria
-              </h2>
-              <button
-                onClick={() => setShowCreateModal(false)}
-                className="text-[13px] font-semibold transition-colors p-1"
-                style={{ color: 'var(--color-text-muted)' }}
-                onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-text-primary)'}
-                onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-text-muted)'}
-                aria-label="Close dialog"
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 14 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 14 }}
+                transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                className="rounded-xl max-w-xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto relative my-auto"
+                style={{
+                  background: 'var(--color-surface)',
+                  border: '1px solid var(--color-border)',
+                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35)',
+                }}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="create-job-title"
+                onClick={(e) => e.stopPropagation()}
               >
-                ✕
-              </button>
-            </div>
+                <div className="flex items-center justify-between pb-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+                  <h2 id="create-job-title" className="text-[15px] font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+                    Add Job Criteria
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={() => setShowCreateModal(false)}
+                    className="p-1 rounded-md text-[13px] font-semibold transition-colors"
+                    style={{ color: 'var(--color-text-muted)' }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-text-primary)'}
+                    onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-text-muted)'}
+                    aria-label="Close dialog"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
 
             <form onSubmit={handleCreateJob} className="space-y-4">
               <FormField label="Job Title *" required>
@@ -539,10 +573,12 @@ export const JobCriteria: React.FC = () => {
                 </button>
               </div>
             </form>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 };
