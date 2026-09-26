@@ -69,6 +69,15 @@ export const api = {
     return data;
   },
 
+  async register(email: string, password: string, name: string): Promise<{ token: string; user: Recruiter }> {
+    const data = await request<{ token: string; user: Recruiter }>('/api/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ email, password, name })
+    });
+    setStoredToken(data.token);
+    return data;
+  },
+
   async logout(): Promise<void> {
     try {
       await request('/api/auth/logout', { method: 'POST' });

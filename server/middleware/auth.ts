@@ -23,7 +23,7 @@ export function revokeSession(token: string): void {
   sessions.delete(token);
 }
 
-export function authMiddleware(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+export async function authMiddleware(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<any> {
   const authHeader = req.headers.authorization;
   const token = authHeader?.startsWith('Bearer ')
     ? authHeader.slice(7)
@@ -39,18 +39,23 @@ export function authMiddleware(req: AuthenticatedRequest, res: Response, next: N
     return res.status(401).json({ error: 'Session expired. Please log in again.' });
   }
 
-  const user = db.getUserById(session.userId);
-  if (!user) {
-    return res.status(401).json({ error: 'User account not found.' });
+  try {
+    const user = await db.getUserById(session.userId);
+    if (!user) {
+      return res.status(401).json({ error: 'User account not found.' });
+    }
+
+    req.user = {
+      id: user._id ? user._id.toString() : (user.id || ''),
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      lastLoginAt: user.lastLoginAt
+    };
+
+    next();
+  } catch (error) {
+    console.error('Auth middleware error:', error);
+    return res.status(500).json({ error: 'Authentication service error.' });
   }
-
-  req.user = {
-    id: user.id,
-    email: user.email,
-    name: user.name,
-    role: user.role,
-    lastLoginAt: user.lastLoginAt
-  };
-
-  next();
 }

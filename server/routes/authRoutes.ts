@@ -49,6 +49,53 @@ router.post('/login', async (req: Request, res: Response): Promise<any> => {
   }
 });
 
+router.post('/register', async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { email, password, name } = req.body;
+
+    if (!email || !password || !name) {
+      return res.status(400).json({ error: 'Email, password, and name are required.' });
+    }
+
+    const existingUser = await db.getUserByEmail(email);
+    if (existingUser) {
+      return res.status(409).json({ error: 'A user with this email already exists.' });
+    }
+
+    const user = await db.addUser({
+      email,
+      name,
+      passwordHash: password, // The Mongoose pre-save hook handles hashing
+      role: 'recruiter',
+      lastLoginAt: new Date()
+    });
+
+    const token = createSession(user.id);
+
+    await db.addAuditLog({
+      recruiterEmail: user.email,
+      action: 'RECRUITER_REGISTER',
+      entityType: 'auth',
+      entityId: user.id,
+      details: `New recruiter ${user.name} registered and logged in`
+    });
+
+    return res.status(201).json({
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        lastLoginAt: user.lastLoginAt
+      }
+    });
+  } catch (error) {
+    console.error('Registration error:', error);
+    return res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
 router.post('/logout', authMiddleware, async (req: AuthenticatedRequest, res: Response): Promise<any> => {
   try {
     const authHeader = req.headers.authorization;

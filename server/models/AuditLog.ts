@@ -18,7 +18,7 @@ const AuditLogSchema = new Schema<IAuditLog>({
     enum: ['screening', 'candidate', 'job', 'auth', 'settings'],
     required: true 
   },
-  entityId: { type: String, required: true },
+  entityId: { type: String, default: '' },
   details: { type: String, required: true }
 }, {
   toJSON: {

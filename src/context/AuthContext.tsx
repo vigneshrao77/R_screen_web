@@ -7,6 +7,7 @@ interface AuthContextType {
   user: Recruiter | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
 }
@@ -51,6 +52,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(data.user);
   };
 
+  const register = async (email: string, password: string, name: string) => {
+    const data = await api.register(email, password, name);
+    setUser(data.user);
+  };
+
   const logout = async () => {
     try {
       await api.logout();
@@ -65,6 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user,
         loading,
         login,
+        register,
         logout,
         isAuthenticated: !!user
       }}

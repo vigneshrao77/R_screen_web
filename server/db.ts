@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import dns from 'dns';
 import crypto from 'crypto';
 import path from 'path';
 import fs from 'fs';
@@ -10,6 +11,13 @@ import { AuditLog, IAuditLog } from './models/AuditLog.js';
 import { Settings, ISettings } from './models/Settings.js';
 import { JobDescription } from '../src/types/index.js';
 import bcrypt from 'bcryptjs';
+
+// Resolve MongoDB Atlas SRV records reliably across Windows and router DNS setups
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch (e) {
+  console.warn('[MongoDB] Custom DNS configuration notice:', e);
+}
 
 const UPLOADS_DIR = path.resolve(process.cwd(), 'uploads', 'resumes');
 if (!fs.existsSync(UPLOADS_DIR)) {
@@ -23,6 +31,10 @@ export async function connectDB() {
   }
   
   try {
+    // Also ensure DNS servers are active before connecting
+    try {
+      dns.setServers(['8.8.8.8', '1.1.1.1']);
+    } catch (_) {}
     await mongoose.connect(process.env.MONGODB_URI);
     console.log('[MongoDB] Connected successfully');
     await seedDatabase();
@@ -90,15 +102,18 @@ async function seedDatabase() {
 class Database {
   // Users
   public async getUsers() {
-    return User.find().lean();
+    const users = await User.find();
+    return users.map(u => u.toJSON());
   }
 
   public async getUserByEmail(email: string) {
-    return User.findOne({ email }).lean();
+    const user = await User.findOne({ email });
+    return user ? user.toJSON() : null;
   }
 
   public async getUserById(id: string) {
-    return User.findById(id).lean();
+    const user = await User.findById(id);
+    return user ? user.toJSON() : null;
   }
 
   public async verifyPassword(user: any, passwordAttempt: string): Promise<boolean> {
@@ -109,6 +124,12 @@ class Database {
 
   public async updateLastLogin(userId: string) {
     await User.findByIdAndUpdate(userId, { lastLoginAt: new Date() });
+  }
+
+  public async addUser(user: any) {
+    const newUser = new User(user);
+    await newUser.save();
+    return newUser.toJSON();
   }
 
   // Jobs

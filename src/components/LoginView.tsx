@@ -4,37 +4,37 @@ import { ShieldCheck, AlertCircle, ArrowRight, Lock, Mail } from 'lucide-react';
 import { motion } from 'motion/react';
 
 export const LoginView: React.FC = () => {
-  const { login } = useAuth();
-  const [email, setEmail] = useState('recruiter@company.com');
-  const [password, setPassword] = useState('Recruiter2026!');
+  const { login, register } = useAuth();
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
-      setError('Please provide your work email and password.');
+    if (!email || !password || (isRegistering && !name)) {
+      setError('Please provide all required fields.');
       return;
     }
 
     setLoading(true);
     setError(null);
     try {
-      await login(email.trim(), password);
+      if (isRegistering) {
+        if (register) {
+          await register(email.trim(), password, name.trim());
+        } else {
+          throw new Error('Registration is not supported right now.');
+        }
+      } else {
+        await login(email.trim(), password);
+      }
     } catch (err: any) {
       setError(err.message || 'Authentication failed. Please verify credentials.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleFillDemo = (type: 'lead' | 'senior') => {
-    if (type === 'lead') {
-      setEmail('recruiter@company.com');
-      setPassword('Recruiter2026!');
-    } else {
-      setEmail('sarah.jenkins@company.com');
-      setPassword('Recruiter2026!');
     }
   };
 
@@ -64,7 +64,7 @@ export const LoginView: React.FC = () => {
             className="text-xl font-semibold tracking-tight"
             style={{ color: 'var(--color-text-primary)' }}
           >
-            Sign in to TalentScreen
+            {isRegistering ? 'Create your account' : 'Sign in to TalentScreen'}
           </h1>
           <p
             className="text-sm mt-1"
@@ -99,6 +99,37 @@ export const LoginView: React.FC = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {isRegistering && (
+              <div>
+                <label
+                  htmlFor="register-name"
+                  className="block text-[13px] font-medium mb-1.5"
+                  style={{ color: 'var(--color-text-secondary)' }}
+                >
+                  Full name
+                </label>
+                <div className="relative">
+                  <input
+                    id="register-name"
+                    type="text"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Jane Doe"
+                    className="w-full px-3 py-2.5 text-sm rounded-lg transition-colors"
+                    style={{
+                      background: 'var(--color-surface)',
+                      border: '1px solid var(--color-border)',
+                      color: 'var(--color-text-primary)',
+                      outline: 'none',
+                    }}
+                    onFocus={(e) => e.currentTarget.style.borderColor = 'var(--color-primary)'}
+                    onBlur={(e) => e.currentTarget.style.borderColor = 'var(--color-border)'}
+                  />
+                </div>
+              </div>
+            )}
+
             <div>
               <label
                 htmlFor="login-email"
@@ -178,67 +209,21 @@ export const LoginView: React.FC = () => {
               onMouseEnter={(e) => { if (!loading) e.currentTarget.style.background = 'var(--color-primary-hover)' }}
               onMouseLeave={(e) => e.currentTarget.style.background = 'var(--color-primary)'}
             >
-              <span>{loading ? 'Signing in…' : 'Sign in'}</span>
+              <span>{loading ? (isRegistering ? 'Creating account…' : 'Signing in…') : (isRegistering ? 'Create account' : 'Sign in')}</span>
               {!loading && <ArrowRight className="w-4 h-4" />}
             </motion.button>
           </form>
 
-          {/* Demo accounts */}
-          <div className="mt-6 pt-5" style={{ borderTop: '1px solid var(--color-border-subtle)' }}>
-            <span
-              className="text-[11px] font-semibold uppercase tracking-wider block mb-3"
-              style={{ color: 'var(--color-text-muted)' }}
+          {/* Toggle register/login */}
+          <div className="mt-6 text-center">
+            <button
+              type="button"
+              onClick={() => setIsRegistering(!isRegistering)}
+              className="text-[13px] font-medium transition-colors hover:underline"
+              style={{ color: 'var(--color-text-secondary)' }}
             >
-              Demo Accounts
-            </span>
-            <div className="grid grid-cols-2 gap-2">
-              <motion.button
-                type="button"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => handleFillDemo('lead')}
-                className="p-2.5 text-left rounded-lg transition-colors"
-                style={{
-                  border: '1px solid var(--color-border)',
-                  background: 'var(--color-surface)',
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-surface-subtle)'}
-                onMouseLeave={(e) => e.currentTarget.style.background = 'var(--color-surface)'}
-              >
-                <div className="text-[12px] font-semibold" style={{ color: 'var(--color-text-primary)' }}>
-                  Lead Recruiter
-                </div>
-                <div className="text-[11px] truncate mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
-                  recruiter@company.com
-                </div>
-              </motion.button>
-              <motion.button
-                type="button"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => handleFillDemo('senior')}
-                className="p-2.5 text-left rounded-lg transition-colors"
-                style={{
-                  border: '1px solid var(--color-border)',
-                  background: 'var(--color-surface)',
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-surface-subtle)'}
-                onMouseLeave={(e) => e.currentTarget.style.background = 'var(--color-surface)'}
-              >
-                <div className="text-[12px] font-semibold" style={{ color: 'var(--color-text-primary)' }}>
-                  Sarah Jenkins
-                </div>
-                <div className="text-[11px] truncate mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
-                  sarah.jenkins@…
-                </div>
-              </motion.button>
-            </div>
-            <p className="text-[11px] mt-2.5 text-center" style={{ color: 'var(--color-text-muted)' }}>
-              Password: <code
-                className="px-1.5 py-0.5 rounded text-[10px] font-mono"
-                style={{ background: 'var(--color-surface-subtle)', color: 'var(--color-text-secondary)' }}
-              >Recruiter2026!</code>
-            </p>
+              {isRegistering ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
+            </button>
           </div>
         </div>
 
