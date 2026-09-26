@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AuditLog } from '../types/index';
 import { api } from '../services/api';
 import { ShieldCheck, RefreshCw, AlertCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 export const AuditLogView: React.FC = () => {
   const [logs, setLogs] = useState<AuditLog[]>([]);
@@ -37,7 +38,9 @@ export const AuditLogView: React.FC = () => {
           </p>
         </div>
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           onClick={fetchLogs}
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors self-start sm:self-auto"
           style={{
@@ -50,7 +53,7 @@ export const AuditLogView: React.FC = () => {
         >
           <RefreshCw className="w-3.5 h-3.5" />
           <span>Refresh</span>
-        </button>
+        </motion.button>
       </div>
 
       {error && (
@@ -93,10 +96,24 @@ export const AuditLogView: React.FC = () => {
                   <th className="py-2.5 px-4 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Details</th>
                 </tr>
               </thead>
-              <tbody>
+              <motion.tbody
+                initial="hidden"
+                animate="show"
+                variants={{
+                  hidden: { opacity: 0 },
+                  show: {
+                    opacity: 1,
+                    transition: { staggerChildren: 0.05 }
+                  }
+                }}
+              >
                 {logs.map(log => (
-                  <tr
+                  <motion.tr
                     key={log.id}
+                    variants={{
+                      hidden: { opacity: 0, x: -10 },
+                      show: { opacity: 1, x: 0 }
+                    }}
                     className="transition-colors text-[12px]"
                     style={{ borderBottom: '1px solid var(--color-border-subtle)' }}
                     onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-surface-subtle)'}
@@ -123,12 +140,12 @@ export const AuditLogView: React.FC = () => {
                     <td className="py-2.5 px-4 uppercase font-mono text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
                       {log.entityType}
                     </td>
-                    <td className="py-2.5 px-4 max-w-md truncate" style={{ color: 'var(--color-text-secondary)' }} title={log.details}>
+                    <td className="py-2.5 px-4 max-w-md truncate" style={{ color: 'var(--color-text-secondary)' }}>
                       {log.details}
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
-              </tbody>
+              </motion.tbody>
             </table>
           </div>
         ) : (

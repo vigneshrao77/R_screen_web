@@ -7,7 +7,7 @@
       "role": "admin",
       "passwordHash": "e7a3104f6e55b2b7f80ceeb8f209c43fb5504d68fef363c362e26b14c18dcde8",
       "salt": "1e1605ef70417e488a549821797ee2f7",
-      "lastLoginAt": "2026-09-25T13:15:40.552Z"
+      "lastLoginAt": "2026-09-26T13:26:49.685Z"
     }
   ],
   "jobs": [
@@ -256,13 +256,13 @@
       "fullName": "Peggarla Vignesh rao",
       "email": "peggarlavigneshrao1@gmail.com",
       "phone": "6300306330",
-      "resumeFilename": "1790269222188_resume_vignesh.pdf",
-      "resumePath": "C:\\Users\\pegga\\Downloads\\resume-screening-agent\\uploads\\resumes\\1790269222188_resume_vignesh.pdf",
+      "resumeFilename": "1790429223857_resume_vignesh.pdf",
+      "resumePath": "C:\\Users\\pegga\\Downloads\\resume-screening-agent\\uploads\\resumes\\1790429223857_resume_vignesh.pdf",
       "fileSize": 47257,
       "extractedTextLength": 4006,
       "id": "cand-42710a66-222d-42be-9121-a60ee6b7c9b3",
       "createdAt": "2026-09-24T17:00:22.209Z",
-      "updatedAt": "2026-09-24T17:00:24.704Z"
+      "updatedAt": "2026-09-26T13:27:04.800Z"
     },
     {
       "fullName": "Elena Rostova",
@@ -280,13 +280,13 @@
       "fullName": "David Chen",
       "email": "david.chen.ai@example.com",
       "phone": "+1 (650) 432-8899",
-      "resumeFilename": "David_Chen_Resume.pdf",
-      "resumePath": "/app/applet/uploads/resumes/David_Chen_Resume.pdf",
-      "fileSize": 1468,
+      "resumeFilename": "1790428733122_David_Chen_Resume.pdf",
+      "resumePath": "C:\\Users\\pegga\\Downloads\\resume-screening-agent\\uploads\\resumes\\1790428733122_David_Chen_Resume.pdf",
+      "fileSize": 617,
       "extractedTextLength": 56,
       "id": "cand-93f6e2f2-37fb-4c2e-beac-9a39291ad120",
       "createdAt": "2026-09-24T13:21:07.299Z",
-      "updatedAt": "2026-09-24T13:21:07.861Z"
+      "updatedAt": "2026-09-26T13:18:53.189Z"
     },
     {
       "fullName": "Jordan Rivera",
@@ -314,6 +314,259 @@
     }
   ],
   "screenings": [
+    {
+      "candidateId": "cand-42710a66-222d-42be-9121-a60ee6b7c9b3",
+      "candidate": {
+        "fullName": "Peggarla Vignesh rao",
+        "email": "peggarlavigneshrao1@gmail.com",
+        "phone": "6300306330",
+        "resumeFilename": "1790429223857_resume_vignesh.pdf",
+        "resumePath": "C:\\Users\\pegga\\Downloads\\resume-screening-agent\\uploads\\resumes\\1790429223857_resume_vignesh.pdf",
+        "fileSize": 47257,
+        "extractedTextLength": 4006,
+        "id": "cand-42710a66-222d-42be-9121-a60ee6b7c9b3",
+        "createdAt": "2026-09-24T17:00:22.209Z",
+        "updatedAt": "2026-09-26T13:27:03.863Z"
+      },
+      "jobId": "job-fd9fd7ea",
+      "jobTitle": "Data Scientist",
+      "status": "completed",
+      "statusMessage": "AI screening complete and candidate report generated.",
+      "error": null,
+      "result": {
+        "candidate_name": "Vignesh Rao Peggarla",
+        "job_title": "Data Scientist",
+        "candidate_summary": "Vignesh Rao Peggarla is an undergraduate Computer Science student (graduating 2028) with a strong foundation in full-stack MERN development, basic GenAI orchestration (LangChain, Ollama, Gemini API), and competitive programming. However, his background lacks classical data science, statistical modeling, predictive analytics, and professional enterprise experience, making him significantly underqualified for this 2-4 year Data Scientist role.",
+        "matched_skills": [
+          "Python",
+          "SQL"
+        ],
+        "missing_skills": [
+          "Pandas",
+          "Scikit-Learn",
+          "Machine Learning (predictive modeling)",
+          "Data Visualization",
+          "A/B Testing & Experimentation",
+          "TensorFlow",
+          "PyTorch",
+          "BigQuery",
+          "Tableau",
+          "Spark"
+        ],
+        "additional_skills": [
+          "ReactJS",
+          "Node.js",
+          "Express.js",
+          "MongoDB",
+          "LangChain / LangGraph / LangSmith",
+          "Chrome Extension Development",
+          "Firebase Cloud Functions",
+          "Ollama & Llama 3.2"
+        ],
+        "strengths": [
+          "Demonstrated proficiency in Python, JavaScript, and backend REST API development.",
+          "Hands-on exposure to applied generative AI tools such as Gemini AI, Ollama, LangChain, and Streamlit.",
+          "Strong fundamental problem-solving and algorithmic thinking evidenced by 400+ solved problems across LeetCode, CodeChef, and Codeforces."
+        ],
+        "weaknesses": [
+          "Lacks foundational data science toolsets such as Pandas, Scikit-Learn, data visualization libraries, and big data tools (Spark, BigQuery).",
+          "No proven experience designing A/B testing frameworks, statistical experiments, or building classical predictive ML models.",
+          "Significant experience gap: currently an undergraduate (graduating class of 2028) lacking the mandatory 2-4 years of professional experience and the required Master's degree."
+        ],
+        "experience_match": "The candidate has approximately 4-5 months of future/projected internship experience in software development and GenAI wrapper engineering, falling well short of the 2-4 years of full-time professional data science experience specified in the job description.",
+        "education_match": "The role requires a Master's degree in Data Science, Statistics, Mathematics, or a related field. The candidate is currently pursuing a B.Tech in Computer Science (expected completion in 2028), failing both the degree level and specialization prerequisites.",
+        "risk_assessment": {
+          "risk_score": "High",
+          "reason": "The candidate lacks formal training and applied experience in predictive analytics, statistical hypothesis testing, and production data science workflows; placing him in this role would lead to inability to deliver on machine learning models, misinterpretation of business metrics, and high supervision overhead."
+        },
+        "reward_assessment": {
+          "reward_score": "Low",
+          "reason": "While the candidate has solid software engineering drive and AI wrapper skills, the overlap with this core data science and analytics position is minimal, offering low leverage for immediate business needs."
+        },
+        "overall_fit_rating": 2,
+        "ats_score": 25,
+        "recommendation": "Reject",
+        "interview_questions": [
+          "Can you describe an end-to-end predictive modeling workflow you implemented, detailing your feature engineering and model evaluation metrics?",
+          "How have you designed and evaluated an A/B test in a past project to determine statistical significance?",
+          "Which statistical techniques and libraries (e.g., Pandas, Scikit-Learn) do you use to clean, explore, and analyze complex unstructured datasets?",
+          "Explain how you would architect a model training pipeline using distributed tools like Spark or BigQuery.",
+          "How do you plan to handle a full-time 2-4 year experienced on-site position in San Francisco while completing your degree in Hyderabad?"
+        ],
+        "justification": "The candidate was assigned an overall fit rating of 2/10 because there is a severe mismatch across experience level, educational attainment, and core technical competencies. The role mandates 2-4 years of experience, a Master's degree in a quantitative field, and expertise in Pandas, Scikit-Learn, predictive ML, and A/B testing. In contrast, the candidate is a current undergraduate student with primarily web development (MERN) and LLM-wrapper project experience, possessing only incidental overlap with Python and SQL."
+      },
+      "n8nExecution": {
+        "triggeredAt": "2026-09-26T13:27:04.808Z",
+        "status": "bypassed",
+        "details": "n8n webhook URL not configured or integration disabled. Direct AI screening active."
+      },
+      "recruiterId": "usr-admin-1",
+      "recruiterEmail": "recruiter@company.com",
+      "completedAt": "2026-09-26T13:27:13.899Z",
+      "id": "scr-bc112fbb-03b7-4f8f-a2e3-458f1a54877f",
+      "retryCount": 0,
+      "createdAt": "2026-09-26T13:27:03.870Z"
+    },
+    {
+      "candidateId": "cand-42710a66-222d-42be-9121-a60ee6b7c9b3",
+      "candidate": {
+        "fullName": "Peggarla Vignesh rao",
+        "email": "peggarlavigneshrao1@gmail.com",
+        "phone": "6300306330",
+        "resumeFilename": "1790429073112_resume_vignesh.pdf",
+        "resumePath": "C:\\Users\\pegga\\Downloads\\resume-screening-agent\\uploads\\resumes\\1790429073112_resume_vignesh.pdf",
+        "fileSize": 47257,
+        "extractedTextLength": 4006,
+        "id": "cand-42710a66-222d-42be-9121-a60ee6b7c9b3",
+        "createdAt": "2026-09-24T17:00:22.209Z",
+        "updatedAt": "2026-09-26T13:24:33.116Z"
+      },
+      "jobId": "job-fd9fd7ea",
+      "jobTitle": "Data Scientist",
+      "status": "failed",
+      "statusMessage": "Screening failed",
+      "error": "Failed to evaluate resume with Gemini AI: Could not load the default credentials. Browse to https://cloud.google.com/docs/authentication/getting-started for more information.",
+      "result": null,
+      "n8nExecution": {
+        "triggeredAt": "2026-09-26T13:24:33.258Z",
+        "status": "bypassed",
+        "details": "n8n webhook URL not configured or integration disabled. Direct AI screening active."
+      },
+      "recruiterId": "usr-admin-1",
+      "recruiterEmail": "recruiter@company.com",
+      "completedAt": null,
+      "id": "scr-96c33375-f206-4f7d-8ea1-c16f2b0ba56d",
+      "retryCount": 1,
+      "createdAt": "2026-09-26T13:24:33.121Z"
+    },
+    {
+      "candidateId": "cand-42710a66-222d-42be-9121-a60ee6b7c9b3",
+      "candidate": {
+        "fullName": "vignesh",
+        "email": "peggarlavigneshrao1@gmail.com",
+        "phone": "6300306330",
+        "resumeFilename": "1790429050209_resume_vignesh.pdf",
+        "resumePath": "C:\\Users\\pegga\\Downloads\\resume-screening-agent\\uploads\\resumes\\1790429050209_resume_vignesh.pdf",
+        "fileSize": 47257,
+        "extractedTextLength": 4006,
+        "id": "cand-42710a66-222d-42be-9121-a60ee6b7c9b3",
+        "createdAt": "2026-09-24T17:00:22.209Z",
+        "updatedAt": "2026-09-26T13:24:10.213Z"
+      },
+      "jobId": "job-fd9fd7ea",
+      "jobTitle": "Data Scientist",
+      "status": "failed",
+      "statusMessage": "Screening failed",
+      "error": "Failed to evaluate resume with Gemini AI: Could not load the default credentials. Browse to https://cloud.google.com/docs/authentication/getting-started for more information.",
+      "result": null,
+      "n8nExecution": {
+        "triggeredAt": "2026-09-26T13:24:10.358Z",
+        "status": "bypassed",
+        "details": "n8n webhook URL not configured or integration disabled. Direct AI screening active."
+      },
+      "recruiterId": "usr-admin-1",
+      "recruiterEmail": "recruiter@company.com",
+      "completedAt": null,
+      "id": "scr-7f6b7c79-6d1a-41a5-a903-eb3a145c49a5",
+      "retryCount": 1,
+      "createdAt": "2026-09-26T13:24:10.219Z"
+    },
+    {
+      "candidateId": "cand-42710a66-222d-42be-9121-a60ee6b7c9b3",
+      "candidate": {
+        "fullName": "Peggarla Vignesh rao",
+        "email": "peggarlavigneshrao1@gmail.com",
+        "phone": "6300306330",
+        "resumeFilename": "1790428959270_resume_vignesh.pdf",
+        "resumePath": "C:\\Users\\pegga\\Downloads\\resume-screening-agent\\uploads\\resumes\\1790428959270_resume_vignesh.pdf",
+        "fileSize": 47257,
+        "extractedTextLength": 60,
+        "id": "cand-42710a66-222d-42be-9121-a60ee6b7c9b3",
+        "createdAt": "2026-09-24T17:00:22.209Z",
+        "updatedAt": "2026-09-26T13:22:39.274Z"
+      },
+      "jobId": "job-ai-engineer-01",
+      "jobTitle": "AI Engineer",
+      "status": "failed",
+      "statusMessage": "Screening failed",
+      "error": "EPERM: operation not permitted, rename 'C:\\Users\\pegga\\Downloads\\resume-screening-agent\\data\\database.json.tmp.1790428959478' -> 'C:\\Users\\pegga\\Downloads\\resume-screening-agent\\data\\database.json'",
+      "result": null,
+      "n8nExecution": {
+        "triggeredAt": "2026-09-26T13:22:39.478Z",
+        "status": "bypassed",
+        "details": "n8n webhook URL not configured or integration disabled. Direct AI screening active."
+      },
+      "recruiterId": "usr-admin-1",
+      "recruiterEmail": "recruiter@company.com",
+      "completedAt": null,
+      "id": "scr-651826ac-bd7a-4d4a-8808-5a5a2bd9a884",
+      "retryCount": 1,
+      "createdAt": "2026-09-26T13:22:39.279Z"
+    },
+    {
+      "candidateId": "cand-93f6e2f2-37fb-4c2e-beac-9a39291ad120",
+      "candidate": {
+        "fullName": "David Chen",
+        "email": "david.chen.ai@example.com",
+        "phone": "+1 (650) 432-8899",
+        "resumeFilename": "1790428733122_David_Chen_Resume.pdf",
+        "resumePath": "C:\\Users\\pegga\\Downloads\\resume-screening-agent\\uploads\\resumes\\1790428733122_David_Chen_Resume.pdf",
+        "fileSize": 617,
+        "extractedTextLength": 56,
+        "id": "cand-93f6e2f2-37fb-4c2e-beac-9a39291ad120",
+        "createdAt": "2026-09-24T13:21:07.299Z",
+        "updatedAt": "2026-09-26T13:18:53.126Z"
+      },
+      "jobId": "job-fd9fd7ea",
+      "jobTitle": "Data Scientist",
+      "status": "failed",
+      "statusMessage": "Screening failed",
+      "error": "Failed to evaluate resume with Gemini AI: Could not load the default credentials. Browse to https://cloud.google.com/docs/authentication/getting-started for more information.",
+      "result": null,
+      "n8nExecution": {
+        "triggeredAt": "2026-09-26T13:18:53.200Z",
+        "status": "bypassed",
+        "details": "n8n webhook URL not configured or integration disabled. Direct AI screening active."
+      },
+      "recruiterId": "usr-admin-1",
+      "recruiterEmail": "recruiter@company.com",
+      "completedAt": null,
+      "id": "scr-5e8aeede-a39b-496b-8271-75d3df6a20e7",
+      "retryCount": 1,
+      "createdAt": "2026-09-26T13:18:53.130Z"
+    },
+    {
+      "candidateId": "cand-42710a66-222d-42be-9121-a60ee6b7c9b3",
+      "candidate": {
+        "fullName": "Peggarla Vignesh rao",
+        "email": "peggarlavigneshrao1@gmail.com",
+        "phone": "6300306330",
+        "resumeFilename": "1790426077852_systemdesigndocx.pdf",
+        "resumePath": "C:\\Users\\pegga\\Downloads\\resume-screening-agent\\uploads\\resumes\\1790426077852_systemdesigndocx.pdf",
+        "fileSize": 781517,
+        "extractedTextLength": 4006,
+        "id": "cand-42710a66-222d-42be-9121-a60ee6b7c9b3",
+        "createdAt": "2026-09-24T17:00:22.209Z",
+        "updatedAt": "2026-09-26T12:34:37.870Z"
+      },
+      "jobId": "job-fd9fd7ea",
+      "jobTitle": "Data Scientist",
+      "status": "failed",
+      "statusMessage": "Screening failed",
+      "error": "Failed to evaluate resume with Gemini AI: Could not load the default credentials. Browse to https://cloud.google.com/docs/authentication/getting-started for more information.",
+      "result": null,
+      "n8nExecution": {
+        "triggeredAt": "2026-09-26T12:34:40.280Z",
+        "status": "bypassed",
+        "details": "n8n webhook URL not configured or integration disabled. Direct AI screening active."
+      },
+      "recruiterId": "usr-admin-1",
+      "recruiterEmail": "recruiter@company.com",
+      "completedAt": null,
+      "id": "scr-7228fb71-1cb0-48e7-acb7-e61052785cfb",
+      "retryCount": 1,
+      "createdAt": "2026-09-26T12:34:37.878Z"
+    },
     {
       "candidateId": "cand-42710a66-222d-42be-9121-a60ee6b7c9b3",
       "candidate": {
@@ -744,6 +997,132 @@
     }
   ],
   "auditLogs": [
+    {
+      "recruiterEmail": "recruiter@company.com",
+      "action": "SCREENING_COMPLETED",
+      "entityType": "screening",
+      "entityId": "scr-bc112fbb-03b7-4f8f-a2e3-458f1a54877f",
+      "details": "Screened candidate Peggarla Vignesh rao for role Data Scientist. Result: Reject, ATS: 25/100, Fit: 2/10.",
+      "id": "aud-c61531cf-9227-4099-9424-27bb6fa78527",
+      "timestamp": "2026-09-26T13:27:13.914Z"
+    },
+    {
+      "recruiterEmail": "recruiter@company.com",
+      "action": "RESUME_UPLOADED",
+      "entityType": "screening",
+      "entityId": "scr-bc112fbb-03b7-4f8f-a2e3-458f1a54877f",
+      "details": "Uploaded resume resume_vignesh.pdf for candidate Peggarla Vignesh rao targeting Data Scientist",
+      "id": "aud-993dca0c-d315-484a-a9a6-1866e49ea387",
+      "timestamp": "2026-09-26T13:27:03.875Z"
+    },
+    {
+      "recruiterEmail": "recruiter@company.com",
+      "action": "RECRUITER_LOGIN",
+      "entityType": "auth",
+      "entityId": "usr-admin-1",
+      "details": "Recruiter Sarah Jenkins (Lead HR) logged into screening portal",
+      "id": "aud-640b5296-7311-4ad9-82f4-3c37e81f06ab",
+      "timestamp": "2026-09-26T13:26:49.691Z"
+    },
+    {
+      "recruiterEmail": "recruiter@company.com",
+      "action": "SCREENING_FAILED",
+      "entityType": "screening",
+      "entityId": "scr-96c33375-f206-4f7d-8ea1-c16f2b0ba56d",
+      "details": "Screening failed for candidate Peggarla Vignesh rao: Failed to evaluate resume with Gemini AI: Could not load the default credentials. Browse to https://cloud.google.com/docs/authentication/getting-started for more information.",
+      "id": "aud-c8ae4acf-8a84-4b65-8538-4028d9c6c344",
+      "timestamp": "2026-09-26T13:24:37.316Z"
+    },
+    {
+      "recruiterEmail": "recruiter@company.com",
+      "action": "RESUME_UPLOADED",
+      "entityType": "screening",
+      "entityId": "scr-96c33375-f206-4f7d-8ea1-c16f2b0ba56d",
+      "details": "Uploaded resume resume_vignesh.pdf for candidate Peggarla Vignesh rao targeting Data Scientist",
+      "id": "aud-1d03fd13-537b-421c-8d6c-d498e00a0581",
+      "timestamp": "2026-09-26T13:24:33.127Z"
+    },
+    {
+      "recruiterEmail": "recruiter@company.com",
+      "action": "SCREENING_FAILED",
+      "entityType": "screening",
+      "entityId": "scr-7f6b7c79-6d1a-41a5-a903-eb3a145c49a5",
+      "details": "Screening failed for candidate vignesh: Failed to evaluate resume with Gemini AI: Could not load the default credentials. Browse to https://cloud.google.com/docs/authentication/getting-started for more information.",
+      "id": "aud-46b8167a-b500-4451-bf5e-c9597b09efdc",
+      "timestamp": "2026-09-26T13:24:14.430Z"
+    },
+    {
+      "recruiterEmail": "recruiter@company.com",
+      "action": "RESUME_UPLOADED",
+      "entityType": "screening",
+      "entityId": "scr-7f6b7c79-6d1a-41a5-a903-eb3a145c49a5",
+      "details": "Uploaded resume resume_vignesh.pdf for candidate vignesh targeting Data Scientist",
+      "id": "aud-8337eae7-9a0b-4c57-b850-03ee1a1a3059",
+      "timestamp": "2026-09-26T13:24:10.224Z"
+    },
+    {
+      "recruiterEmail": "recruiter@company.com",
+      "action": "SCREENING_FAILED",
+      "entityType": "screening",
+      "entityId": "scr-651826ac-bd7a-4d4a-8808-5a5a2bd9a884",
+      "details": "Screening failed for candidate Peggarla Vignesh rao: EPERM: operation not permitted, rename 'C:\\Users\\pegga\\Downloads\\resume-screening-agent\\data\\database.json.tmp.1790428959478' -> 'C:\\Users\\pegga\\Downloads\\resume-screening-agent\\data\\database.json'",
+      "id": "aud-14e8062c-2a5f-47c8-afe6-3183426d06f4",
+      "timestamp": "2026-09-26T13:22:39.506Z"
+    },
+    {
+      "recruiterEmail": "recruiter@company.com",
+      "action": "RESUME_UPLOADED",
+      "entityType": "screening",
+      "entityId": "scr-651826ac-bd7a-4d4a-8808-5a5a2bd9a884",
+      "details": "Uploaded resume resume_vignesh.pdf for candidate Peggarla Vignesh rao targeting AI Engineer",
+      "id": "aud-d917e4ea-7796-4e45-811c-49f1732831f1",
+      "timestamp": "2026-09-26T13:22:39.286Z"
+    },
+    {
+      "recruiterEmail": "recruiter@company.com",
+      "action": "SCREENING_FAILED",
+      "entityType": "screening",
+      "entityId": "scr-5e8aeede-a39b-496b-8271-75d3df6a20e7",
+      "details": "Screening failed for candidate David Chen: Failed to evaluate resume with Gemini AI: Could not load the default credentials. Browse to https://cloud.google.com/docs/authentication/getting-started for more information.",
+      "id": "aud-a800112e-795d-4221-adab-014e35fe8018",
+      "timestamp": "2026-09-26T13:18:57.270Z"
+    },
+    {
+      "recruiterEmail": "recruiter@company.com",
+      "action": "RESUME_UPLOADED",
+      "entityType": "screening",
+      "entityId": "scr-5e8aeede-a39b-496b-8271-75d3df6a20e7",
+      "details": "Uploaded resume David_Chen_Resume.pdf for candidate David Chen targeting Data Scientist",
+      "id": "aud-1680783d-aa45-4f6e-a53f-2ebfc82ee650",
+      "timestamp": "2026-09-26T13:18:53.134Z"
+    },
+    {
+      "recruiterEmail": "recruiter@company.com",
+      "action": "SCREENING_FAILED",
+      "entityType": "screening",
+      "entityId": "scr-7228fb71-1cb0-48e7-acb7-e61052785cfb",
+      "details": "Screening failed for candidate Peggarla Vignesh rao: Failed to evaluate resume with Gemini AI: Could not load the default credentials. Browse to https://cloud.google.com/docs/authentication/getting-started for more information.",
+      "id": "aud-45f21c6e-deac-4b6d-8eaa-4fd381af6005",
+      "timestamp": "2026-09-26T12:34:46.292Z"
+    },
+    {
+      "recruiterEmail": "recruiter@company.com",
+      "action": "RESUME_UPLOADED",
+      "entityType": "screening",
+      "entityId": "scr-7228fb71-1cb0-48e7-acb7-e61052785cfb",
+      "details": "Uploaded resume systemdesigndocx.pdf for candidate Peggarla Vignesh rao targeting Data Scientist",
+      "id": "aud-6ce39818-b8a0-4515-bfe8-4ce6d298128f",
+      "timestamp": "2026-09-26T12:34:37.884Z"
+    },
+    {
+      "recruiterEmail": "recruiter@company.com",
+      "action": "RECRUITER_LOGIN",
+      "entityType": "auth",
+      "entityId": "usr-admin-1",
+      "details": "Recruiter Sarah Jenkins (Lead HR) logged into screening portal",
+      "id": "aud-a6e49fd2-3f4c-45b9-9422-73c30a96ec5e",
+      "timestamp": "2026-09-26T12:34:06.450Z"
+    },
     {
       "recruiterEmail": "recruiter@company.com",
       "action": "RECRUITER_LOGIN",

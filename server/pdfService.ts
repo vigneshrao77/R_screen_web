@@ -48,10 +48,10 @@ export async function extractTextFromPdf(pdfBuffer: Buffer): Promise<string> {
   }
 
   // Method 3: Fallback to Gemini multimodal PDF extraction with retry
-  const modelsToTry = ['gemini-3.8-flash', 'gemini-2.5-flash'];
+  const modelsToTry = ['gemini-3.8-flash'];
   for (const model of modelsToTry) {
     try {
-      const response = await ai.models.generateContent({
+      const response = await ai().models.generateContent({
         model,
         contents: [
           {

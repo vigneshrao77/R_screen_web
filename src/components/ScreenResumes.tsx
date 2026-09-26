@@ -11,6 +11,7 @@ import {
   Zap,
   Info
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface ScreenResumesProps {
   onScreeningComplete: (screeningId: string) => void;
@@ -240,36 +241,46 @@ export const ScreenResumes: React.FC<ScreenResumesProps> = ({
           </div>
 
           <div className="mt-8 space-y-4 pl-2" style={{ borderLeft: '2px solid var(--color-border)' }}>
-            {steps.map((label, i) => {
-              const stepNum = i + 1;
-              const isDone = currentStep > stepNum;
-              const isActive = currentStep >= stepNum;
-              return (
-                <div
-                  key={i}
-                  className="flex items-center gap-3 pl-4 transition-opacity duration-300"
-                  style={{ opacity: isActive ? 1 : 0.3 }}
-                >
-                  {isDone ? (
-                    <Check className="w-4 h-4 shrink-0" style={{ color: 'var(--color-success)' }} />
-                  ) : (
-                    <div
-                      className="w-4 h-4 rounded-full shrink-0"
-                      style={{ border: '1.5px solid var(--color-border-strong)' }}
-                    />
-                  )}
-                  <span
-                    className="text-[13px]"
-                    style={{
-                      color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-muted)',
-                      fontWeight: isActive ? 500 : 400,
-                    }}
+            <AnimatePresence>
+              {steps.map((label, i) => {
+                const stepNum = i + 1;
+                const isDone = currentStep > stepNum;
+                const isActive = currentStep >= stepNum;
+                
+                if (!isActive && currentStep !== i) return null; // Only show active and completed, or just keep them all fading in.
+                // Wait, it's better to show all steps but animate their opacity as they become active.
+                
+                return (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: isActive ? 1 : 0.3, x: 0 }}
+                    transition={{ duration: 0.4, delay: i * 0.1 }}
+                    className="flex items-center gap-3 pl-4"
                   >
-                    {label}
-                  </span>
-                </div>
-              );
-            })}
+                    {isDone ? (
+                      <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring" }}>
+                        <Check className="w-4 h-4 shrink-0" style={{ color: 'var(--color-success)' }} />
+                      </motion.div>
+                    ) : (
+                      <div
+                        className="w-4 h-4 rounded-full shrink-0"
+                        style={{ border: '1.5px solid var(--color-border-strong)' }}
+                      />
+                    )}
+                    <span
+                      className="text-[13px]"
+                      style={{
+                        color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-muted)',
+                        fontWeight: isActive ? 500 : 400,
+                      }}
+                    >
+                      {label}
+                    </span>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
           </div>
         </div>
       </div>
@@ -460,15 +471,17 @@ export const ScreenResumes: React.FC<ScreenResumesProps> = ({
                 </span>
               </div>
 
-              <div
+              <motion.div
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className="rounded-lg p-8 text-center cursor-pointer transition-all duration-200"
+                className="rounded-lg p-8 text-center cursor-pointer transition-colors duration-200"
                 style={{
                   border: `2px dashed ${file ? 'var(--color-primary)' : 'var(--color-border)'}`,
-                  background: file ? 'var(--color-primary)' : 'var(--color-surface)',
-                  color: file ? 'var(--color-primary-text)' : 'var(--color-text-primary)',
+                  background: file ? 'var(--color-surface-subtle)' : 'var(--color-surface)',
+                  color: 'var(--color-text-primary)',
                 }}
                 onMouseEnter={(e) => {
                   if (!file) e.currentTarget.style.borderColor = 'var(--color-border-strong)';
@@ -508,7 +521,7 @@ export const ScreenResumes: React.FC<ScreenResumesProps> = ({
                     </div>
                   </div>
                 )}
-              </div>
+              </motion.div>
             </div>
 
             {/* Candidate Form */}
@@ -597,11 +610,13 @@ export const ScreenResumes: React.FC<ScreenResumesProps> = ({
               <span>Evaluation takes approximately 5 seconds.</span>
             </div>
 
-            <button
+            <motion.button
               type="button"
+              whileHover={file && email.trim() ? { scale: 1.02 } : {}}
+              whileTap={file && email.trim() ? { scale: 0.97 } : {}}
               onClick={() => handleStartScreening(false)}
               disabled={!file || !email.trim()}
-              className="ml-auto inline-flex items-center gap-2 px-5 py-2.5 text-[13px] font-semibold rounded-md transition-all"
+              className="ml-auto inline-flex items-center gap-2 px-5 py-2.5 text-[13px] font-semibold rounded-md transition-colors"
               style={{
                 background: file && email.trim() ? 'var(--color-primary)' : 'var(--color-surface-subtle)',
                 color: file && email.trim() ? 'var(--color-primary-text)' : 'var(--color-text-muted)',
@@ -616,7 +631,7 @@ export const ScreenResumes: React.FC<ScreenResumesProps> = ({
             >
               <span>Start Screening</span>
               <ArrowRight className="w-4 h-4" />
-            </button>
+            </motion.button>
           </div>
         </div>
       </div>

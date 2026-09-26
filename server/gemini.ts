@@ -1,14 +1,24 @@
+import 'dotenv/config';
 import { GoogleGenAI, Type } from '@google/genai';
 import { StructuredScreeningResult } from '../src/types/index.js';
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-  httpOptions: {
-    headers: {
-      'User-Agent': 'aistudio-build',
-    },
-  },
-});
+let _aiClient: GoogleGenAI | null = null;
+export function getAiClient(): GoogleGenAI {
+  if (!_aiClient) {
+    if (!process.env.GEMINI_API_KEY) {
+      console.warn('GEMINI_API_KEY is missing from environment variables');
+    }
+    _aiClient = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build',
+        },
+      },
+    });
+  }
+  return _aiClient;
+}
 
 const N8N_SYSTEM_MESSAGE = `You are an expert technical recruiter specializing in AI, automation, and software roles.
 
@@ -166,13 +176,14 @@ export async function evaluateResumeWithGemini(
 ): Promise<StructuredScreeningResult> {
   const promptText = `Candidates resume :  ${resumeText}\n\nJob description requirements :${jobDescriptionText}`;
 
-  const candidateModels = ['gemini-2.5-flash', 'gemini-3.8-flash'];
+  const candidateModels = ['gemini-3.8-flash'];
   let lastError: any = null;
 
   for (const model of candidateModels) {
     for (let attempt = 1; attempt <= 2; attempt++) {
       try {
-        const response = await ai.models.generateContent({
+        const aiClient = getAiClient();
+        const response = await aiClient.models.generateContent({
           model,
           contents: promptText,
           config: {
@@ -203,4 +214,4 @@ export async function evaluateResumeWithGemini(
   throw new Error(`Failed to evaluate resume with Gemini AI: ${lastError?.message || 'Unknown error'}`);
 }
 
-export { ai };
+export { getAiClient as ai };

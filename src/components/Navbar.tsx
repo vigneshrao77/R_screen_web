@@ -11,6 +11,7 @@ import {
   Menu,
   X
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 export type ActiveTab =
   | 'dashboard'
@@ -56,12 +57,15 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
           <div className="flex items-center gap-8">
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               className="flex items-center gap-2.5 group"
               onClick={() => handleNavClick('dashboard')}
               aria-label="Go to Dashboard"
             >
-              <div
+              <motion.div
+                whileHover={{ rotate: 5 }}
                 className="w-8 h-8 flex items-center justify-center font-serif italic text-sm transition-transform group-hover:scale-105"
                 style={{
                   background: 'var(--color-primary)',
@@ -69,7 +73,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
                 }}
               >
                 TS
-              </div>
+              </motion.div>
               <div className="hidden sm:block">
                 <span
                   className="font-serif font-semibold tracking-wide text-base block leading-none"
@@ -78,15 +82,17 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
                   TalentScreen
                 </span>
               </div>
-            </button>
+            </motion.button>
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-1" role="navigation" aria-label="Main navigation">
               {navItems.map(item => {
                 const isActive = activeTab === item.id;
                 return (
-                  <button
+                  <motion.button
                     key={item.id}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => handleNavClick(item.id)}
                     className="relative flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-medium rounded-md transition-colors"
                     style={{
@@ -103,7 +109,16 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
                   >
                     {item.icon}
                     <span>{item.label}</span>
-                  </button>
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeTab"
+                        className="absolute inset-0 rounded-md"
+                        style={{ borderBottom: '2px solid var(--color-primary)', opacity: 0.5 }}
+                        initial={false}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      />
+                    )}
+                  </motion.button>
                 );
               })}
             </nav>
@@ -111,7 +126,9 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
 
           {/* Right side: CTA + User + Logout */}
           <div className="flex items-center gap-3">
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => handleNavClick('screen')}
               className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[13px] font-semibold rounded-md transition-colors"
               style={{
@@ -123,7 +140,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
             >
               <FileText className="w-3.5 h-3.5" />
               <span>Screen Resume</span>
-            </button>
+            </motion.button>
 
             <div className="hidden lg:flex items-center gap-2 pl-3" style={{ borderLeft: '1px solid var(--color-border)' }}>
               <div className="text-right">
@@ -139,23 +156,23 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
               </div>
             </div>
 
-            <button
+            <motion.button
+              whileHover={{ scale: 1.1, backgroundColor: "var(--color-surface-hover)" }}
+              whileTap={{ scale: 0.9 }}
               onClick={logout}
               title="Log out"
               className="p-1.5 rounded-md transition-colors"
               style={{ color: 'var(--color-text-muted)' }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.color = 'var(--color-text-primary)';
-                e.currentTarget.style.background = 'var(--color-surface-hover)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.color = 'var(--color-text-muted)';
-                e.currentTarget.style.background = 'transparent';
               }}
               aria-label="Log out"
             >
               <LogOut className="w-4 h-4" strokeWidth={1.8} />
-            </button>
+            </motion.button>
 
             {/* Mobile menu toggle */}
             <button
@@ -172,36 +189,42 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
       </div>
 
       {/* Mobile Navigation Dropdown */}
-      {mobileMenuOpen && (
-        <div
-          className="md:hidden"
-          style={{
-            borderTop: '1px solid var(--color-border)',
-            background: 'var(--color-surface)',
-          }}
-        >
-          <nav className="max-w-[1280px] mx-auto px-4 py-2 space-y-0.5" role="navigation" aria-label="Mobile navigation">
-            {navItems.map(item => {
-              const isActive = activeTab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleNavClick(item.id)}
-                  className="flex items-center gap-2.5 w-full px-3 py-2.5 text-[13px] font-medium rounded-md transition-colors"
-                  style={{
-                    color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
-                    background: isActive ? 'var(--color-surface-subtle)' : 'transparent',
-                  }}
-                  aria-current={isActive ? 'page' : undefined}
-                >
-                  {item.icon}
-                  <span>{item.label}</span>
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-      )}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="md:hidden overflow-hidden"
+            style={{
+              borderTop: '1px solid var(--color-border)',
+              background: 'var(--color-surface)',
+            }}
+          >
+            <nav className="max-w-[1280px] mx-auto px-4 py-2 space-y-0.5" role="navigation" aria-label="Mobile navigation">
+              {navItems.map(item => {
+                const isActive = activeTab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handleNavClick(item.id)}
+                    className="flex items-center gap-2.5 w-full px-3 py-2.5 text-[13px] font-medium rounded-md transition-colors"
+                    style={{
+                      color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
+                      background: isActive ? 'var(--color-surface-subtle)' : 'transparent',
+                    }}
+                    aria-current={isActive ? 'page' : undefined}
+                  >
+                    {item.icon}
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };

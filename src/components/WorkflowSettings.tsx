@@ -10,6 +10,7 @@ import {
   Bot,
   Server
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 export const WorkflowSettings: React.FC = () => {
   const [settings, setSettings] = useState<SystemSettings | null>(null);
@@ -133,15 +134,23 @@ export const WorkflowSettings: React.FC = () => {
       </div>
 
       {/* TAB: Architecture */}
-      {activeTab === 'architecture' && (
-        <div className="space-y-5">
-          <div
-            className="rounded-lg p-5 space-y-4"
-            style={{
-              background: 'var(--color-surface)',
-              border: '1px solid var(--color-border)',
-            }}
+      <AnimatePresence mode="wait">
+        {activeTab === 'architecture' && (
+          <motion.div
+            key="architecture"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="space-y-5"
           >
+            <div
+              className="rounded-lg p-5 space-y-4"
+              style={{
+                background: 'var(--color-surface)',
+                border: '1px solid var(--color-border)',
+              }}
+            >
             <h2 className="text-[13px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
               Execution Pipeline
             </h2>
@@ -217,12 +226,17 @@ export const WorkflowSettings: React.FC = () => {
               />
             </div>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* TAB: Webhook */}
       {activeTab === 'webhook' && (
-        <div
+        <motion.div
+          key="webhook"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
           className="rounded-lg p-5 space-y-5"
           style={{
             background: 'var(--color-surface)',
@@ -259,8 +273,10 @@ export const WorkflowSettings: React.FC = () => {
                   onFocus={(e) => e.currentTarget.style.borderColor = 'var(--color-primary)'}
                   onBlur={(e) => e.currentTarget.style.borderColor = 'var(--color-border)'}
                 />
-                <button
+                <motion.button
                   type="button"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={handleTestConnection}
                   disabled={testing}
                   className="px-3.5 py-2.5 rounded-md text-[13px] font-medium transition-colors disabled:opacity-50"
@@ -273,7 +289,7 @@ export const WorkflowSettings: React.FC = () => {
                   onMouseLeave={(e) => e.currentTarget.style.background = 'var(--color-surface-subtle)'}
                 >
                   {testing ? 'Testing…' : 'Test Connection'}
-                </button>
+                </motion.button>
               </div>
               <p className="text-[11px] mt-1.5" style={{ color: 'var(--color-text-muted)' }}>
                 Webhook ID: <code className="font-mono text-[10px]">bd7c0530-5e43-4c40-ac51-e8c1c087e6ec</code>
@@ -315,8 +331,10 @@ export const WorkflowSettings: React.FC = () => {
             </label>
 
             <div className="pt-4 flex justify-end" style={{ borderTop: '1px solid var(--color-border)' }}>
-              <button
+              <motion.button
                 type="submit"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 disabled={saving}
                 className="px-4 py-2 rounded-md text-[13px] font-semibold transition-colors disabled:opacity-50"
                 style={{
@@ -327,21 +345,26 @@ export const WorkflowSettings: React.FC = () => {
                 onMouseLeave={(e) => e.currentTarget.style.background = 'var(--color-primary)'}
               >
                 {saving ? 'Saving…' : 'Save Configuration'}
-              </button>
+              </motion.button>
             </div>
           </form>
-        </div>
-      )}
+        </motion.div>
+        )}
 
-      {/* TAB: Schema */}
-      {activeTab === 'schema' && (
-        <div
-          className="rounded-lg p-5 space-y-4"
-          style={{
-            background: 'var(--color-surface)',
-            border: '1px solid var(--color-border)',
-          }}
-        >
+        {/* TAB: Schema */}
+        {activeTab === 'schema' && (
+          <motion.div
+            key="schema"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="rounded-lg p-5 space-y-4"
+            style={{
+              background: 'var(--color-surface)',
+              border: '1px solid var(--color-border)',
+            }}
+          >
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-[15px] font-semibold" style={{ color: 'var(--color-text-primary)' }}>
@@ -396,8 +419,9 @@ export const WorkflowSettings: React.FC = () => {
   "justification": "string (Evidence-based rating explanation)"
 }`}
           </pre>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </div>
   );
 };

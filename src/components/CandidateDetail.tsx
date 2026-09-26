@@ -19,6 +19,7 @@ import {
   Send,
   Trash2
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface CandidateDetailProps {
   screeningId: string;
@@ -143,7 +144,9 @@ export const CandidateDetail: React.FC<CandidateDetailProps> = ({
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Action bar */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <button
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={onBack}
           className="inline-flex items-center gap-1.5 text-[13px] font-medium transition-colors"
           style={{ color: 'var(--color-text-secondary)' }}
@@ -152,10 +155,12 @@ export const CandidateDetail: React.FC<CandidateDetailProps> = ({
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Candidates</span>
-        </button>
+        </motion.button>
 
         <div className="flex items-center gap-2">
-          <a
+          <motion.a
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             href={api.getResumeUrl(screening.id)}
             target="_blank"
             rel="noopener noreferrer"
@@ -166,9 +171,11 @@ export const CandidateDetail: React.FC<CandidateDetailProps> = ({
           >
             <Download className="w-3.5 h-3.5" />
             <span>Resume</span>
-          </a>
+          </motion.a>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={handleRetry}
             disabled={retrying}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[13px] font-semibold transition-colors disabled:opacity-50"
@@ -181,9 +188,11 @@ export const CandidateDetail: React.FC<CandidateDetailProps> = ({
           >
             <RefreshCw className={`w-3.5 h-3.5 ${retrying ? 'animate-spin' : ''}`} />
             <span>{isFailed ? 'Retry' : 'Re-screen'}</span>
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
             onClick={handleDelete}
             disabled={deleting}
             title="Delete screening record"
@@ -199,7 +208,7 @@ export const CandidateDetail: React.FC<CandidateDetailProps> = ({
             }}
           >
             <Trash2 className="w-4 h-4" />
-          </button>
+          </motion.button>
         </div>
       </div>
 
@@ -617,7 +626,11 @@ const SectionCard: React.FC<{
   label: string;
   content: string;
 }> = ({ icon, title, badge, label, content }) => (
-  <div
+  <motion.div
+    whileHover={{ y: -2, scale: 1.01 }}
+    initial={{ opacity: 0, y: 15 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.3 }}
     className="rounded-lg p-5"
     style={{
       background: 'var(--color-surface)',
@@ -646,7 +659,7 @@ const SectionCard: React.FC<{
         {content}
       </p>
     </div>
-  </div>
+  </motion.div>
 );
 
 const ListCard: React.FC<{
@@ -656,7 +669,11 @@ const ListCard: React.FC<{
   bulletColor: string;
   emptyText: string;
 }> = ({ icon, title, items, bulletColor, emptyText }) => (
-  <div
+  <motion.div
+    whileHover={{ y: -2, scale: 1.01 }}
+    initial={{ opacity: 0, y: 15 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.3, delay: 0.1 }}
     className="rounded-lg p-5"
     style={{
       background: 'var(--color-surface)',
@@ -679,7 +696,7 @@ const ListCard: React.FC<{
         <li style={{ color: 'var(--color-text-muted)' }}>{emptyText}</li>
       )}
     </ul>
-  </div>
+  </motion.div>
 );
 
 const SkillSection: React.FC<{
@@ -728,7 +745,11 @@ const SkillSection: React.FC<{
 );
 
 const TextCard: React.FC<{ title: string; content: string }> = ({ title, content }) => (
-  <div
+  <motion.div
+    whileHover={{ y: -2, scale: 1.01 }}
+    initial={{ opacity: 0, y: 15 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.3 }}
     className="rounded-lg p-5"
     style={{
       background: 'var(--color-surface)',
@@ -748,11 +769,15 @@ const TextCard: React.FC<{ title: string; content: string }> = ({ title, content
     >
       {content}
     </p>
-  </div>
+  </motion.div>
 );
 
 const InfoCard: React.FC<{ label: string; value: string }> = ({ label, value }) => (
-  <div
+  <motion.div
+    whileHover={{ scale: 1.02 }}
+    initial={{ opacity: 0, scale: 0.95 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ duration: 0.3 }}
     className="p-3 rounded-md"
     style={{
       background: 'var(--color-surface-subtle)',
@@ -763,5 +788,5 @@ const InfoCard: React.FC<{ label: string; value: string }> = ({ label, value }) 
       {label}
     </span>
     <span className="text-[13px] font-medium" style={{ color: 'var(--color-text-primary)' }}>{value}</span>
-  </div>
+  </motion.div>
 );

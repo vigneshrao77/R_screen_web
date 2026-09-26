@@ -5,8 +5,8 @@ import { authMiddleware, AuthenticatedRequest } from '../middleware/auth.js';
 const router = Router();
 router.use(authMiddleware);
 
-router.get('/', (_req: AuthenticatedRequest, res: Response) => {
-  const logs = db.getAuditLogs(150);
+router.get('/', async (_req: AuthenticatedRequest, res: Response) => {
+  const logs = await db.getAuditLogs(150);
   return res.json(logs);
 });
 

@@ -13,6 +13,7 @@ import { WorkflowSettings } from '../components/WorkflowSettings';
 import { AuditLogView } from '../components/AuditLogView';
 import { LoginView } from '../components/LoginView';
 import { RefreshCw } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function Home() {
   const { isAuthenticated, loading } = useAuth();
@@ -55,53 +56,69 @@ export default function Home() {
         selectedCandidateId={selectedCandidateId}
       />
 
-      <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        {selectedCandidateId ? (
-          <CandidateDetail
-            screeningId={selectedCandidateId}
-            onBack={handleBackFromDetail}
-            onDeleted={handleBackFromDetail}
-          />
-        ) : (
-          <>
-            {activeTab === 'dashboard' && (
-              <Dashboard
-                onSelectCandidate={handleSelectCandidate}
-                onNavigateToScreen={() => setActiveTab('screen')}
-                onNavigateToCandidates={() => setActiveTab('candidates')}
+      <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 overflow-hidden">
+        <AnimatePresence mode="wait">
+          {selectedCandidateId ? (
+              <motion.div
+                key="candidate-detail"
+                initial={{ opacity: 0, y: 15, filter: 'blur(4px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              >
+              <CandidateDetail
+                screeningId={selectedCandidateId}
+                onBack={handleBackFromDetail}
+                onDeleted={handleBackFromDetail}
               />
-            )}
+            </motion.div>
+          ) : (
+              <motion.div
+                key={activeTab as string}
+                initial={{ opacity: 0, y: 15, filter: 'blur(4px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              >
+              {activeTab === 'dashboard' && (
+                <Dashboard
+                  onSelectCandidate={handleSelectCandidate}
+                  onNavigateToScreen={() => setActiveTab('screen')}
+                  onNavigateToCandidates={() => setActiveTab('candidates')}
+                />
+              )}
 
-            {activeTab === 'screen' && (
-              <ScreenResumes
-                onScreeningComplete={(id) => {
-                  setSelectedCandidateId(id);
-                }}
-                onViewCandidate={(id) => {
-                  setSelectedCandidateId(id);
-                }}
-              />
-            )}
+              {activeTab === 'screen' && (
+                <ScreenResumes
+                  onScreeningComplete={(id) => {
+                    setSelectedCandidateId(id);
+                  }}
+                  onViewCandidate={(id) => {
+                    setSelectedCandidateId(id);
+                  }}
+                />
+              )}
 
-            {activeTab === 'candidates' && (
-              <CandidateList
-                onSelectCandidate={handleSelectCandidate}
-                onNavigateToScreen={() => setActiveTab('screen')}
-              />
-            )}
+              {activeTab === 'candidates' && (
+                <CandidateList
+                  onSelectCandidate={handleSelectCandidate}
+                  onNavigateToScreen={() => setActiveTab('screen')}
+                />
+              )}
 
-            {activeTab === 'jobs' && <JobCriteria />}
+              {activeTab === 'jobs' && <JobCriteria />}
 
-            {activeTab === 'history' && (
-              <ScreeningHistory onSelectCandidate={handleSelectCandidate} />
-            )}
+              {activeTab === 'history' && (
+                <ScreeningHistory onSelectCandidate={handleSelectCandidate} />
+              )}
 
-            {activeTab === 'settings' && <WorkflowSettings />}
+              {activeTab === 'settings' && <WorkflowSettings />}
 
-            {/* Default to settings for old audit routing temporarily if caught */}
-            {activeTab === 'audit' as any && <WorkflowSettings />}
-          </>
-        )}
+              {/* Default to settings for old audit routing temporarily if caught */}
+              {activeTab === 'audit' as any && <WorkflowSettings />}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
       <footer

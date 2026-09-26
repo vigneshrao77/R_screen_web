@@ -8,6 +8,7 @@ import jobRoutes from './server/routes/jobRoutes.js';
 import statsRoutes from './server/routes/statsRoutes.js';
 import settingsRoutes from './server/routes/settingsRoutes.js';
 import auditRoutes from './server/routes/auditRoutes.js';
+import { connectDB } from './server/db.js';
 
 dotenv.config();
 
@@ -43,6 +44,8 @@ async function setupFrontend() {
   const handle = nextApp.getRequestHandler();
   
   await nextApp.prepare();
+  
+  await connectDB();
 
   app.all('*', (req, res) => {
     return handle(req, res);

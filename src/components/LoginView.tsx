@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { ShieldCheck, AlertCircle, ArrowRight, Lock, Mail } from 'lucide-react';
+import { motion } from 'motion/react';
 
 export const LoginView: React.FC = () => {
   const { login } = useAuth();
@@ -42,7 +43,12 @@ export const LoginView: React.FC = () => {
       className="min-h-screen flex flex-col items-center justify-center px-4 py-12"
       style={{ background: 'var(--color-bg)' }}
     >
-      <div className="w-full max-w-[400px]">
+      <motion.div 
+        initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="w-full max-w-[400px]"
+      >
         {/* Logo & Title */}
         <div className="text-center mb-8">
           <div
@@ -159,8 +165,10 @@ export const LoginView: React.FC = () => {
               </div>
             </div>
 
-            <button
+            <motion.button
               type="submit"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               disabled={loading}
               className="w-full flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
               style={{
@@ -172,7 +180,7 @@ export const LoginView: React.FC = () => {
             >
               <span>{loading ? 'Signing in…' : 'Sign in'}</span>
               {!loading && <ArrowRight className="w-4 h-4" />}
-            </button>
+            </motion.button>
           </form>
 
           {/* Demo accounts */}
@@ -184,8 +192,10 @@ export const LoginView: React.FC = () => {
               Demo Accounts
             </span>
             <div className="grid grid-cols-2 gap-2">
-              <button
+              <motion.button
                 type="button"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => handleFillDemo('lead')}
                 className="p-2.5 text-left rounded-lg transition-colors"
                 style={{
@@ -201,9 +211,11 @@ export const LoginView: React.FC = () => {
                 <div className="text-[11px] truncate mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
                   recruiter@company.com
                 </div>
-              </button>
-              <button
+              </motion.button>
+              <motion.button
                 type="button"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => handleFillDemo('senior')}
                 className="p-2.5 text-left rounded-lg transition-colors"
                 style={{
@@ -219,7 +231,7 @@ export const LoginView: React.FC = () => {
                 <div className="text-[11px] truncate mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
                   sarah.jenkins@…
                 </div>
-              </button>
+              </motion.button>
             </div>
             <p className="text-[11px] mt-2.5 text-center" style={{ color: 'var(--color-text-muted)' }}>
               Password: <code
@@ -237,7 +249,7 @@ export const LoginView: React.FC = () => {
             Encrypted session authentication
           </span>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

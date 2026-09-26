@@ -5,20 +5,20 @@ import { authMiddleware, AuthenticatedRequest } from '../middleware/auth.js';
 const router = Router();
 router.use(authMiddleware);
 
-router.get('/', (_req: AuthenticatedRequest, res: Response) => {
-  const jobs = db.getJobs();
+router.get('/', async (_req: AuthenticatedRequest, res: Response) => {
+  const jobs = await db.getJobs();
   return res.json(jobs);
 });
 
-router.get('/:id', (req: AuthenticatedRequest, res: Response) => {
-  const job = db.getJobById(req.params.id);
+router.get('/:id', async (req: AuthenticatedRequest, res: Response) => {
+  const job = await db.getJobById(req.params.id);
   if (!job) {
     return res.status(404).json({ error: 'Job description not found' });
   }
   return res.json(job);
 });
 
-router.post('/', (req: AuthenticatedRequest, res: Response) => {
+router.post('/', async (req: AuthenticatedRequest, res: Response): Promise<any> => {
   const {
     title,
     location = 'Remote / Hybrid',
@@ -43,7 +43,7 @@ router.post('/', (req: AuthenticatedRequest, res: Response) => {
     constructedRawText = `${title} Job Description\nPosition: ${title}\nLocation: ${location}\nExperience: ${experienceLevel}\n\nRole Overview:\n${roleOverview}\n\nKey Responsibilities:\n${responsibilities.map((r: string) => `• ${r}`).join('\n')}\n\nRequired Skills:\n${requiredSkills.map((s: string) => `• ${s}`).join('\n')}\n\nPreferred Skills:\n${preferredSkills.map((s: string) => `• ${s}`).join('\n')}\n\nEducation:\n${education}\n\nWhat We Look For:\n${whatWeLookFor}`;
   }
 
-  const job = db.addJob({
+  const job = await db.addJob({
     title,
     location,
     experienceLevel,
@@ -57,7 +57,7 @@ router.post('/', (req: AuthenticatedRequest, res: Response) => {
     active
   });
 
-  db.addAuditLog({
+  await db.addAuditLog({
     recruiterEmail: req.user!.email,
     action: 'JOB_CREATED',
     entityType: 'job',
@@ -68,13 +68,13 @@ router.post('/', (req: AuthenticatedRequest, res: Response) => {
   return res.status(201).json(job);
 });
 
-router.put('/:id', (req: AuthenticatedRequest, res: Response) => {
-  const updated = db.updateJob(req.params.id, req.body);
+router.put('/:id', async (req: AuthenticatedRequest, res: Response): Promise<any> => {
+  const updated = await db.updateJob(req.params.id, req.body);
   if (!updated) {
     return res.status(404).json({ error: 'Job description not found' });
   }
 
-  db.addAuditLog({
+  await db.addAuditLog({
     recruiterEmail: req.user!.email,
     action: 'JOB_UPDATED',
     entityType: 'job',

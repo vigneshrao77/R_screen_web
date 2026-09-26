@@ -6,14 +6,8 @@ import { DashboardStats } from '../../src/types/index.js';
 const router = Router();
 router.use(authMiddleware);
 
-router.get('/', (_req: AuthenticatedRequest, res: Response) => {
-  const screenings = db.getScreenings().map(s => {
-    if (!s.candidate) {
-      const c = db.getCandidateById(s.candidateId);
-      if (c) s.candidate = c;
-    }
-    return s;
-  });
+router.get('/', async (_req: AuthenticatedRequest, res: Response) => {
+  const screenings = await db.getScreenings();
 
   const total = screenings.length;
   const completed = screenings.filter(s => s.status === 'completed');

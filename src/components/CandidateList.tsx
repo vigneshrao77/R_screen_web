@@ -10,6 +10,7 @@ import {
   AlertTriangle,
   ArrowUpDown
 } from 'lucide-react';
+import { motion } from 'motion/react';
 
 interface CandidateListProps {
   onSelectCandidate: (candidateId: string) => void;
@@ -164,7 +165,10 @@ export const CandidateList: React.FC<CandidateListProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-          <button
+        <div className="flex items-center gap-2">
+          <motion.button
+            whileHover={filtered.length > 0 ? { scale: 1.03 } : {}}
+            whileTap={filtered.length > 0 ? { scale: 0.96 } : {}}
             onClick={handleExportCsv}
             disabled={filtered.length === 0}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors disabled:opacity-40"
@@ -178,9 +182,11 @@ export const CandidateList: React.FC<CandidateListProps> = ({
           >
             <Download className="w-3.5 h-3.5" />
             <span>Export</span>
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.96 }}
             onClick={onNavigateToScreen}
             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-[13px] font-semibold transition-colors"
             style={{
@@ -192,7 +198,7 @@ export const CandidateList: React.FC<CandidateListProps> = ({
           >
             <FileText className="w-3.5 h-3.5" />
             <span>Screen Resume</span>
-          </button>
+          </motion.button>
         </div>
       </div>
 
@@ -211,112 +217,6 @@ export const CandidateList: React.FC<CandidateListProps> = ({
         </div>
       )}
 
-      {/* Filters */}
-      <div
-        className="rounded-lg p-4 space-y-3"
-        style={{
-          background: 'var(--color-surface)',
-          border: '1px solid var(--color-border)',
-        }}
-      >
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-          {/* Search */}
-          <div className="lg:col-span-2 relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-text-muted)' }} />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search name, email, skills…"
-              className="w-full pl-9 pr-3 py-2 text-[13px] rounded-md transition-colors"
-              style={{
-                ...selectStyles,
-              }}
-              onFocus={(e) => e.currentTarget.style.borderColor = 'var(--color-primary)'}
-              onBlur={(e) => e.currentTarget.style.borderColor = 'var(--color-border)'}
-            />
-          </div>
-
-          <select
-            value={selectedJobId}
-            onChange={(e) => setSelectedJobId(e.target.value)}
-            className="py-2 px-3 text-[13px] rounded-md"
-            style={selectStyles}
-          >
-            <option value="">All Roles</option>
-            {jobs.map(j => (
-              <option key={j.id} value={j.id}>{j.title}</option>
-            ))}
-          </select>
-
-          <select
-            value={selectedRecommendation}
-            onChange={(e) => setSelectedRecommendation(e.target.value)}
-            className="py-2 px-3 text-[13px] rounded-md"
-            style={selectStyles}
-          >
-            <option value="">All Results</option>
-            <option value="Strong Hire">Strong Hire</option>
-            <option value="Shortlist">Shortlist</option>
-            <option value="Consider">Consider</option>
-            <option value="Reject">Reject</option>
-          </select>
-
-          <select
-            value={selectedRisk}
-            onChange={(e) => setSelectedRisk(e.target.value)}
-            className="py-2 px-3 text-[13px] rounded-md"
-            style={selectStyles}
-          >
-            <option value="">All Risk</option>
-            <option value="Low">Low Risk</option>
-            <option value="Medium">Medium Risk</option>
-            <option value="High">High Risk</option>
-          </select>
-        </div>
-
-        {/* Sort & Count */}
-        <div
-          className="pt-3 flex flex-wrap items-center justify-between gap-2 text-[12px]"
-          style={{
-            borderTop: '1px solid var(--color-border-subtle)',
-            color: 'var(--color-text-muted)',
-          }}
-        >
-          <div>
-            <strong style={{ color: 'var(--color-text-primary)' }}>{filtered.length}</strong> of{' '}
-            <strong style={{ color: 'var(--color-text-primary)' }}>{screenings.length}</strong> candidates
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span>Sort:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
-              className="py-1 px-2 text-[12px] rounded-md"
-              style={selectStyles}
-            >
-              <option value="createdAt">Date</option>
-              <option value="atsScore">ATS Score</option>
-              <option value="fitRating">Fit Rating</option>
-              <option value="name">Name</option>
-            </select>
-
-            <button
-              onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-              className="p-1 rounded-md transition-colors"
-              style={{
-                border: '1px solid var(--color-border)',
-                color: 'var(--color-text-secondary)',
-              }}
-              title="Toggle sort order"
-              onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-surface-subtle)'}
-              onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-            >
-              <ArrowUpDown className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
       </div>
 
       {/* Table */}
@@ -328,9 +228,18 @@ export const CandidateList: React.FC<CandidateListProps> = ({
         }}
       >
         {loading ? (
-          <div className="flex items-center justify-center py-20" style={{ color: 'var(--color-text-muted)' }}>
-            <RefreshCw className="w-4 h-4 animate-spin mr-2" />
-            <span className="text-sm">Loading candidates…</span>
+          <div className="p-4 space-y-4 animate-pulse">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="flex items-center justify-between py-3 border-b border-[var(--color-border-subtle)]">
+                <div className="space-y-2">
+                  <div className="h-4 w-32 rounded-md bg-[var(--color-surface-hover)]"></div>
+                  <div className="h-3 w-48 rounded-md bg-[var(--color-surface-hover)]"></div>
+                </div>
+                <div className="h-4 w-24 rounded-md bg-[var(--color-surface-hover)]"></div>
+                <div className="h-6 w-16 rounded-md bg-[var(--color-surface-hover)]"></div>
+                <div className="h-8 w-20 rounded-md bg-[var(--color-surface-hover)]"></div>
+              </div>
+            ))}
           </div>
         ) : filtered.length > 0 ? (
           <div className="overflow-x-auto">
@@ -346,38 +255,53 @@ export const CandidateList: React.FC<CandidateListProps> = ({
                   <th className="py-2.5 px-4 text-right text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}></th>
                 </tr>
               </thead>
-              <tbody>
+              <motion.tbody
+                initial="hidden"
+                animate="show"
+                variants={{
+                  hidden: { opacity: 0 },
+                  show: {
+                    opacity: 1,
+                    transition: { staggerChildren: 0.05 }
+                  }
+                }}
+              >
                 {filtered.map(s => {
                   const candidateName = s.candidate?.fullName || s.result?.candidate_name || 'Candidate';
                   const candidateEmail = s.candidate?.email || 'N/A';
                   const jobTitle = s.jobTitle || s.result?.job_title || 'AI Engineer';
 
                   return (
-                    <tr
+                    <motion.tr
                       key={s.id}
-                      className="transition-colors cursor-pointer"
+                      layout
+                      initial={{ opacity: 0, filter: 'blur(2px)' }}
+                      animate={{ opacity: 1, filter: 'blur(0px)' }}
+                      exit={{ opacity: 0, filter: 'blur(2px)' }}
+                      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                      className="transition-colors cursor-pointer group"
                       style={{ borderBottom: '1px solid var(--color-border-subtle)' }}
                       onClick={() => onSelectCandidate(s.id)}
                       onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-surface-subtle)'}
                       onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                     >
-                      <td className="py-3 px-4">
-                        <div className="text-[13px] font-medium" style={{ color: 'var(--color-text-primary)' }}>{candidateName}</div>
-                        <div className="text-[12px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{candidateEmail}</div>
+                      <td className="py-3.5 px-4">
+                        <div className="text-[13px] font-semibold" style={{ color: 'var(--color-text-primary)' }}>{candidateName}</div>
+                        <div className="text-[12px] mt-0.5 opacity-80" style={{ color: 'var(--color-text-muted)' }}>{candidateEmail}</div>
                       </td>
-                      <td className="py-3 px-4 text-[13px]" style={{ color: 'var(--color-text-secondary)' }}>
+                      <td className="py-3.5 px-4 text-[13px]" style={{ color: 'var(--color-text-secondary)' }}>
                         {jobTitle}
                       </td>
-                      <td className="py-3 px-4 text-center">
+                      <td className="py-3.5 px-4 text-center">
                         {s.result ? (
                           <span className="text-[13px] font-semibold font-mono" style={{ color: 'var(--color-text-primary)' }}>
                             {s.result.ats_score}%
                           </span>
                         ) : (
-                          <span className="text-[12px]" style={{ color: 'var(--color-text-muted)' }}>—</span>
+                          <span className="text-[12px] opacity-40" style={{ color: 'var(--color-text-muted)' }}>—</span>
                         )}
                       </td>
-                      <td className="py-3 px-4 text-center">
+                      <td className="py-3.5 px-4 text-center">
                         {s.result ? (
                           <span
                             className="inline-block px-1.5 py-0.5 rounded-md text-[12px] font-semibold font-mono"
@@ -390,40 +314,41 @@ export const CandidateList: React.FC<CandidateListProps> = ({
                             {s.result.overall_fit_rating}/10
                           </span>
                         ) : (
-                          <span className="text-[12px]" style={{ color: 'var(--color-text-muted)' }}>—</span>
+                          <span className="text-[12px] opacity-40" style={{ color: 'var(--color-text-muted)' }}>—</span>
                         )}
                       </td>
-                      <td className="py-3 px-4">
+                      <td className="py-3.5 px-4">
                         <RecommendationBadge recommendation={s.result?.recommendation} />
                       </td>
-                      <td className="py-3 px-4 whitespace-nowrap">
+                      <td className="py-3.5 px-4 whitespace-nowrap">
                         <div className="flex items-center gap-1.5">
                           <ScoreBadge type="risk" score={s.result?.risk_assessment?.risk_score} />
                           <ScoreBadge type="reward" score={s.result?.reward_assessment?.reward_score} />
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-right">
-                        <button
+                      <td className="py-3.5 px-4 text-right">
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
                           onClick={(e) => {
                             e.stopPropagation();
                             onSelectCandidate(s.id);
                           }}
-                          className="px-2.5 py-1 text-[12px] font-medium rounded-md transition-colors"
+                          className="px-3 py-1.5 text-[12px] font-medium rounded-md transition-all opacity-0 group-hover:opacity-100"
                           style={{
-                            border: '1px solid var(--color-border)',
-                            background: 'var(--color-surface)',
-                            color: 'var(--color-text-secondary)',
+                            background: 'var(--color-surface-subtle)',
+                            color: 'var(--color-text-primary)',
                           }}
-                          onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-surface-subtle)'}
-                          onMouseLeave={(e) => e.currentTarget.style.background = 'var(--color-surface)'}
+                          onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-surface-hover)'}
+                          onMouseLeave={(e) => e.currentTarget.style.background = 'var(--color-surface-subtle)'}
                         >
                           View
-                        </button>
+                        </motion.button>
                       </td>
-                    </tr>
+                    </motion.tr>
                   );
                 })}
-              </tbody>
+              </motion.tbody>
             </table>
           </div>
         ) : (

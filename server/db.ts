@@ -1,352 +1,218 @@
-import fs from 'fs';
-import path from 'path';
+import mongoose from 'mongoose';
 import crypto from 'crypto';
-import {
-  Candidate,
-  JobDescription,
-  Screening,
-  Recruiter,
-  AuditLog,
-  SystemSettings
-} from '../src/types/index.js';
+import path from 'path';
+import fs from 'fs';
+import { User, IUser } from './models/User.js';
+import { Job, IJob } from './models/Job.js';
+import { Candidate, ICandidate } from './models/Candidate.js';
+import { Screening, IScreening } from './models/Screening.js';
+import { AuditLog, IAuditLog } from './models/AuditLog.js';
+import { Settings, ISettings } from './models/Settings.js';
+import { JobDescription } from '../src/types/index.js';
+import bcrypt from 'bcryptjs';
 
-interface DatabaseSchema {
-  users: Array<Recruiter & { passwordHash: string; salt: string }>;
-  jobs: JobDescription[];
-  candidates: Candidate[];
-  screenings: Screening[];
-  auditLogs: AuditLog[];
-  settings: SystemSettings;
-}
-
-const DATA_DIR = path.resolve(process.cwd(), 'data');
-const DB_FILE = path.join(DATA_DIR, 'database.json');
 const UPLOADS_DIR = path.resolve(process.cwd(), 'uploads', 'resumes');
-
-// Ensure directories exist
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-}
 if (!fs.existsSync(UPLOADS_DIR)) {
   fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 }
 
-function hashPassword(password: string, salt: string): string {
-  return crypto.scryptSync(password, salt, 32).toString('hex');
+export async function connectDB() {
+  if (!process.env.MONGODB_URI) {
+    console.error('MONGODB_URI is missing from environment variables');
+    process.exit(1);
+  }
+  
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log('[MongoDB] Connected successfully');
+    await seedDatabase();
+  } catch (error) {
+    console.error('[MongoDB] Connection error:', error);
+    process.exit(1);
+  }
 }
 
-const DEFAULT_AI_ENGINEER_RAW_TEXT = `AI Engineer Job Description
-Position: AI Engineer
-Location: Remote / Hybrid
-Experience: 2-5 Years
-Role Overview
-We are looking for an AI Engineer to design, build, and deploy production-ready Generative AI
-applications. You will work on Retrieval-Augmented Generation (RAG), LLM integrations, AI agents,
-and scalable APIs.
-Key Responsibilities
-• Build AI applications using Python and FastAPI.
-• Develop RAG pipelines with vector databases.
-• Integrate OpenAI, Gemini, or Anthropic APIs.
-• Build n8n automations and AI workflows.
-• Work with PostgreSQL, Redis, and Docker.
-• Optimize prompts and structured outputs.
-• Deploy applications to cloud platforms.
-• Collaborate using Git and GitHub.
-Required Skills
-• Python
-• FastAPI / Flask
-• LangChain or LlamaIndex
-• OpenAI / Gemini APIs
-• RAG and Vector Databases (Pinecone, Qdrant, Chroma, FAISS)
-• SQL / PostgreSQL
-• Docker
-• Git & GitHub
-• REST APIs
-Preferred Skills
-• n8n or workflow automation
-• Kubernetes
-• AWS/GCP/Azure
-• CI/CD
-• Prompt Engineering
-• MCP and AI Agents
-Education
-Bachelor's degree in Computer Science, Information Technology, or equivalent practical
-experience.
-What We Look For
-Strong problem-solving skills, excellent communication, ownership mindset, and experience
-building end-to-end AI solutions.`;
+async function seedDatabase() {
+  const userCount = await User.countDocuments();
+  if (userCount === 0) {
+    console.log('[MongoDB] Seeding default admin user...');
+    const admin = new User({
+      email: 'recruiter@company.com',
+      name: 'Sarah Jenkins (Lead HR)',
+      role: 'admin',
+      passwordHash: 'Recruiter2026!' // Will be hashed by pre-save hook
+    });
+    await admin.save();
 
-const DEFAULT_JOB: JobDescription = {
-  id: 'job-ai-engineer-01',
-  title: 'AI Engineer',
-  location: 'Remote / Hybrid',
-  experienceLevel: '2-5 Years',
-  roleOverview: 'We are looking for an AI Engineer to design, build, and deploy production-ready Generative AI applications. You will work on Retrieval-Augmented Generation (RAG), LLM integrations, AI agents, and scalable APIs.',
-  responsibilities: [
-    'Build AI applications using Python and FastAPI',
-    'Develop RAG pipelines with vector databases',
-    'Integrate OpenAI, Gemini, or Anthropic APIs',
-    'Build n8n automations and AI workflows',
-    'Work with PostgreSQL, Redis, and Docker',
-    'Optimize prompts and structured outputs',
-    'Deploy applications to cloud platforms',
-    'Collaborate using Git and GitHub'
-  ],
-  requiredSkills: [
-    'Python',
-    'FastAPI / Flask',
-    'LangChain or LlamaIndex',
-    'OpenAI / Gemini APIs',
-    'RAG and Vector Databases (Pinecone, Qdrant, Chroma, FAISS)',
-    'SQL / PostgreSQL',
-    'Docker',
-    'Git & GitHub',
-    'REST APIs'
-  ],
-  preferredSkills: [
-    'n8n or workflow automation',
-    'Kubernetes',
-    'AWS/GCP/Azure',
-    'CI/CD',
-    'Prompt Engineering',
-    'MCP and AI Agents'
-  ],
-  education: "Bachelor's degree in Computer Science, Information Technology, or equivalent practical experience.",
-  whatWeLookFor: 'Strong problem-solving skills, excellent communication, ownership mindset, and experience building end-to-end AI solutions.',
-  rawText: DEFAULT_AI_ENGINEER_RAW_TEXT,
-  active: true,
-  createdAt: new Date().toISOString()
-};
+    await AuditLog.create({
+      recruiterEmail: 'system',
+      action: 'SYSTEM_INITIALIZED',
+      entityType: 'auth',
+      entityId: admin.id,
+      details: 'Database initialized with default recruiter account'
+    });
+  }
 
-function getInitialDatabase(): DatabaseSchema {
-  const salt = crypto.randomBytes(16).toString('hex');
-  const passwordHash = hashPassword('Recruiter2026!', salt);
+  const jobCount = await Job.countDocuments();
+  if (jobCount === 0) {
+    console.log('[MongoDB] Seeding default job...');
+    const DEFAULT_AI_ENGINEER_RAW_TEXT = `AI Engineer Job Description\nPosition: AI Engineer\nLocation: Remote / Hybrid\nExperience: 2-5 Years\nRole Overview\nWe are looking for an AI Engineer to design, build, and deploy production-ready Generative AI applications.`;
+    const defaultJob = new Job({
+      title: 'AI Engineer',
+      location: 'Remote / Hybrid',
+      experienceLevel: '2-5 Years',
+      roleOverview: 'We are looking for an AI Engineer to design, build, and deploy production-ready Generative AI applications. You will work on Retrieval-Augmented Generation (RAG), LLM integrations, AI agents, and scalable APIs.',
+      responsibilities: ['Build AI applications using Python and FastAPI', 'Develop RAG pipelines with vector databases', 'Integrate OpenAI, Gemini, or Anthropic APIs'],
+      requiredSkills: ['Python', 'FastAPI / Flask', 'LangChain or LlamaIndex', 'OpenAI / Gemini APIs'],
+      preferredSkills: ['n8n or workflow automation', 'Kubernetes'],
+      education: "Bachelor's degree in Computer Science",
+      whatWeLookFor: 'Strong problem-solving skills',
+      rawText: DEFAULT_AI_ENGINEER_RAW_TEXT,
+      active: true
+    });
+    await defaultJob.save();
+  }
 
-  return {
-    users: [
-      {
-        id: 'usr-admin-1',
-        email: 'recruiter@company.com',
-        name: 'Sarah Jenkins (Lead HR)',
-        role: 'admin',
-        passwordHash,
-        salt,
-        lastLoginAt: new Date().toISOString()
-      }
-    ],
-    jobs: [DEFAULT_JOB],
-    candidates: [],
-    screenings: [],
-    auditLogs: [
-      {
-        id: crypto.randomUUID(),
-        timestamp: new Date().toISOString(),
-        recruiterEmail: 'system',
-        action: 'SYSTEM_INITIALIZED',
-        entityType: 'settings',
-        entityId: 'system',
-        details: 'Database initialized with default AI Engineer job profile and recruiter account'
-      }
-    ],
-    settings: {
+  const settingsCount = await Settings.countDocuments();
+  if (settingsCount === 0) {
+    console.log('[MongoDB] Seeding default settings...');
+    const defaultJob = await Job.findOne();
+    await Settings.create({
       n8nWebhookUrl: process.env.N8N_WEBHOOK_URL || '',
       n8nEnabled: !!process.env.N8N_WEBHOOK_URL,
       geminiModel: 'gemini-3.8-flash',
       companyName: 'Apex Human Capital Systems',
-      defaultJobId: 'job-ai-engineer-01'
-    }
-  };
+      defaultJobId: defaultJob ? defaultJob.id : ''
+    });
+  }
 }
 
 class Database {
-  private data: DatabaseSchema;
-
-  constructor() {
-    this.data = this.load();
-  }
-
-  private load(): DatabaseSchema {
-    try {
-      if (fs.existsSync(DB_FILE)) {
-        const raw = fs.readFileSync(DB_FILE, 'utf-8');
-        return JSON.parse(raw);
-      }
-    } catch (err) {
-      console.error('Failed to load database.json, initializing fresh schema', err);
-    }
-    const fresh = getInitialDatabase();
-    this.saveDirect(fresh);
-    return fresh;
-  }
-
-  private saveDirect(data: DatabaseSchema): void {
-    const tempFile = `${DB_FILE}.tmp.${Date.now()}`;
-    fs.writeFileSync(tempFile, JSON.stringify(data, null, 2), 'utf-8');
-    fs.renameSync(tempFile, DB_FILE);
-  }
-
-  public save(): void {
-    this.saveDirect(this.data);
-  }
-
   // Users
-  public getUsers() {
-    return this.data.users;
+  public async getUsers() {
+    return User.find().lean();
   }
 
-  public getUserByEmail(email: string) {
-    return this.data.users.find(u => u.email.toLowerCase() === email.toLowerCase());
+  public async getUserByEmail(email: string) {
+    return User.findOne({ email }).lean();
   }
 
-  public getUserById(id: string) {
-    return this.data.users.find(u => u.id === id);
+  public async getUserById(id: string) {
+    return User.findById(id).lean();
   }
 
-  public verifyPassword(user: DatabaseSchema['users'][0], passwordAttempt: string): boolean {
-    const attemptHash = hashPassword(passwordAttempt, user.salt);
-    return attemptHash === user.passwordHash;
+  public async verifyPassword(user: any, passwordAttempt: string): Promise<boolean> {
+    const userDoc = await User.findById(user.id || user._id);
+    if (!userDoc) return false;
+    return userDoc.comparePassword(passwordAttempt);
   }
 
-  public updateLastLogin(userId: string): void {
-    const user = this.getUserById(userId);
-    if (user) {
-      user.lastLoginAt = new Date().toISOString();
-      this.save();
-    }
+  public async updateLastLogin(userId: string) {
+    await User.findByIdAndUpdate(userId, { lastLoginAt: new Date() });
   }
 
   // Jobs
-  public getJobs(): JobDescription[] {
-    return this.data.jobs;
+  public async getJobs() {
+    const jobs = await Job.find().sort({ createdAt: -1 });
+    return jobs.map(j => j.toJSON());
   }
 
-  public getJobById(id: string): JobDescription | undefined {
-    return this.data.jobs.find(j => j.id === id);
+  public async getJobById(id: string) {
+    const job = await Job.findById(id);
+    return job ? job.toJSON() : undefined;
   }
 
-  public addJob(job: Omit<JobDescription, 'id' | 'createdAt'>): JobDescription {
-    const newJob: JobDescription = {
-      ...job,
-      id: `job-${crypto.randomUUID().slice(0, 8)}`,
-      createdAt: new Date().toISOString()
-    };
-    this.data.jobs.unshift(newJob);
-    this.save();
-    return newJob;
+  public async addJob(job: any) {
+    const newJob = new Job(job);
+    await newJob.save();
+    return newJob.toJSON();
   }
 
-  public updateJob(id: string, updates: Partial<JobDescription>): JobDescription | null {
-    const idx = this.data.jobs.findIndex(j => j.id === id);
-    if (idx === -1) return null;
-    this.data.jobs[idx] = { ...this.data.jobs[idx], ...updates };
-    this.save();
-    return this.data.jobs[idx];
+  public async updateJob(id: string, updates: any) {
+    const job = await Job.findByIdAndUpdate(id, updates, { new: true });
+    return job ? job.toJSON() : null;
   }
 
   // Candidates
-  public getCandidates(): Candidate[] {
-    return this.data.candidates;
+  public async getCandidates() {
+    const cands = await Candidate.find().sort({ createdAt: -1 });
+    return cands.map(c => c.toJSON());
   }
 
-  public getCandidateById(id: string): Candidate | undefined {
-    return this.data.candidates.find(c => c.id === id);
+  public async getCandidateById(id: string) {
+    const cand = await Candidate.findById(id);
+    return cand ? cand.toJSON() : undefined;
   }
 
-  public findCandidateByEmailOrPhone(email: string, phone: string): Candidate | undefined {
-    return this.data.candidates.find(
-      c => c.email.toLowerCase() === email.toLowerCase() || (phone && c.phone === phone)
-    );
+  public async findCandidateByEmailOrPhone(email: string, phone: string) {
+    const cand = await Candidate.findOne({ $or: [{ email: email.toLowerCase() }, { phone }] });
+    return cand ? cand.toJSON() : undefined;
   }
 
-  public addCandidate(candidate: Omit<Candidate, 'id' | 'createdAt' | 'updatedAt'>): Candidate {
-    const newCand: Candidate = {
-      ...candidate,
-      id: `cand-${crypto.randomUUID()}`,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    this.data.candidates.unshift(newCand);
-    this.save();
-    return newCand;
+  public async addCandidate(candidate: any) {
+    const newCand = new Candidate(candidate);
+    await newCand.save();
+    return newCand.toJSON();
   }
 
-  public updateCandidate(id: string, updates: Partial<Candidate>): Candidate | null {
-    const idx = this.data.candidates.findIndex(c => c.id === id);
-    if (idx === -1) return null;
-    this.data.candidates[idx] = {
-      ...this.data.candidates[idx],
-      ...updates,
-      updatedAt: new Date().toISOString()
-    };
-    this.save();
-    return this.data.candidates[idx];
+  public async updateCandidate(id: string, updates: any) {
+    const cand = await Candidate.findByIdAndUpdate(id, updates, { new: true });
+    return cand ? cand.toJSON() : null;
   }
 
   // Screenings
-  public getScreenings(): Screening[] {
-    return this.data.screenings;
+  public async getScreenings() {
+    const scr = await Screening.find().populate('candidate').sort({ createdAt: -1 });
+    return scr.map(s => s.toJSON());
   }
 
-  public getScreeningById(id: string): Screening | undefined {
-    return this.data.screenings.find(s => s.id === id);
+  public async getScreeningById(id: string) {
+    const scr = await Screening.findById(id).populate('candidate');
+    return scr ? scr.toJSON() : undefined;
   }
 
-  public addScreening(screening: Omit<Screening, 'id' | 'createdAt' | 'retryCount'>): Screening {
-    const newScreening: Screening = {
-      ...screening,
-      id: `scr-${crypto.randomUUID()}`,
-      retryCount: 0,
-      createdAt: new Date().toISOString()
-    };
-    this.data.screenings.unshift(newScreening);
-    this.save();
-    return newScreening;
+  public async addScreening(screening: any) {
+    const newScr = new Screening(screening);
+    await newScr.save();
+    await newScr.populate('candidate');
+    return newScr.toJSON();
   }
 
-  public updateScreening(id: string, updates: Partial<Screening>): Screening | null {
-    const idx = this.data.screenings.findIndex(s => s.id === id);
-    if (idx === -1) return null;
-    this.data.screenings[idx] = { ...this.data.screenings[idx], ...updates };
-    this.save();
-    return this.data.screenings[idx];
+  public async updateScreening(id: string, updates: any) {
+    const scr = await Screening.findByIdAndUpdate(id, updates, { new: true }).populate('candidate');
+    return scr ? scr.toJSON() : null;
   }
 
-  public deleteScreening(id: string): boolean {
-    const idx = this.data.screenings.findIndex(s => s.id === id);
-    if (idx === -1) return false;
-    this.data.screenings.splice(idx, 1);
-    this.save();
-    return true;
+  public async deleteScreening(id: string) {
+    const res = await Screening.findByIdAndDelete(id);
+    return !!res;
   }
 
   // Audit Logs
-  public addAuditLog(entry: Omit<AuditLog, 'id' | 'timestamp'>): void {
-    const log: AuditLog = {
-      ...entry,
-      id: `aud-${crypto.randomUUID()}`,
-      timestamp: new Date().toISOString()
-    };
-    this.data.auditLogs.unshift(log);
-    // Keep last 1000 logs
-    if (this.data.auditLogs.length > 1000) {
-      this.data.auditLogs = this.data.auditLogs.slice(0, 1000);
-    }
-    this.save();
+  public async addAuditLog(entry: any) {
+    await AuditLog.create(entry);
   }
 
-  public getAuditLogs(limit = 100): AuditLog[] {
-    return this.data.auditLogs.slice(0, limit);
+  public async getAuditLogs(limit = 100) {
+    const logs = await AuditLog.find().sort({ timestamp: -1 }).limit(limit);
+    return logs.map(l => l.toJSON());
   }
 
   // Settings
-  public getSettings(): SystemSettings {
-    return this.data.settings;
+  public async getSettings() {
+    const set = await Settings.findOne();
+    return set ? set.toJSON() : null;
   }
 
-  public updateSettings(updates: Partial<SystemSettings>): SystemSettings {
-    this.data.settings = { ...this.data.settings, ...updates };
-    this.save();
-    return this.data.settings;
+  public async updateSettings(updates: any) {
+    let set = await Settings.findOne();
+    if (set) {
+      Object.assign(set, updates);
+      await set.save();
+    } else {
+      set = await Settings.create(updates);
+    }
+    return set.toJSON();
   }
 }
 

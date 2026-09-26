@@ -12,6 +12,7 @@ import {
   RefreshCw,
   Award
 } from 'lucide-react';
+import { motion } from 'motion/react';
 
 interface DashboardProps {
   onSelectCandidate: (candidateId: string) => void;
@@ -53,9 +54,22 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20" style={{ color: 'var(--color-text-muted)' }}>
-        <RefreshCw className="w-4 h-4 animate-spin mr-2" />
-        <span className="text-sm">Loading dashboard…</span>
+      <div className="space-y-6 animate-pulse">
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <div className="h-6 w-48 rounded-md bg-[var(--color-surface-hover)]"></div>
+            <div className="h-4 w-72 rounded-md bg-[var(--color-surface-hover)]"></div>
+          </div>
+          <div className="flex gap-2">
+            <div className="h-8 w-20 rounded-md bg-[var(--color-surface-hover)]"></div>
+            <div className="h-8 w-32 rounded-md bg-[var(--color-surface-hover)]"></div>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-32 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)]"></div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -84,7 +98,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-          <button
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.96 }}
             onClick={handleRefresh}
             disabled={refreshing}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors"
@@ -98,9 +114,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
           >
             <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
             <span>Refresh</span>
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.96 }}
             onClick={onNavigateToScreen}
             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-[13px] font-semibold transition-colors"
             style={{
@@ -112,7 +130,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           >
             <FileText className="w-3.5 h-3.5" />
             <span>Screen Resume</span>
-          </button>
+          </motion.button>
         </div>
       </div>
 
@@ -132,7 +150,18 @@ export const Dashboard: React.FC<DashboardProps> = ({
       )}
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <motion.div 
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+        initial="hidden"
+        animate="show"
+        variants={{
+          hidden: { opacity: 0 },
+          show: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1 }
+          }
+        }}
+      >
         <MetricCard
           label="Total Screened"
           value={total}
@@ -177,7 +206,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </div>
           }
         />
-      </div>
+      </motion.div>
 
       {/* Recommendation Distribution */}
       {completed > 0 && (
@@ -251,7 +280,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </p>
           </div>
 
-          <button
+          <motion.button
+            whileHover={{ x: 3 }}
             onClick={onNavigateToCandidates}
             className="inline-flex items-center gap-1 text-[13px] font-medium transition-colors"
             style={{ color: 'var(--color-text-secondary)' }}
@@ -260,7 +290,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           >
             <span>All candidates</span>
             <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+          </motion.button>
         </div>
 
         {stats?.recentScreenings && stats.recentScreenings.length > 0 ? (
@@ -284,9 +314,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   const jobTitle = s.jobTitle || s.result?.job_title || 'AI Engineer';
 
                   return (
-                    <tr
+                    <motion.tr
                       key={s.id}
-                      className="transition-colors cursor-pointer"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                      className="transition-colors cursor-pointer group"
                       style={{ borderBottom: '1px solid var(--color-border-subtle)' }}
                       onClick={() => onSelectCandidate(s.id)}
                       onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-surface-subtle)'}
@@ -334,12 +367,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
                         </div>
                       </td>
                       <td className="py-3 px-4 text-right">
-                        <button
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
                           onClick={(e) => {
                             e.stopPropagation();
                             onSelectCandidate(s.id);
                           }}
-                          className="px-2.5 py-1 text-[12px] font-medium rounded-md transition-colors"
+                          className="px-2.5 py-1 text-[12px] font-medium rounded-md transition-all opacity-0 group-hover:opacity-100"
                           style={{
                             border: '1px solid var(--color-border)',
                             background: 'var(--color-surface)',
@@ -349,9 +384,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
                           onMouseLeave={(e) => e.currentTarget.style.background = 'var(--color-surface)'}
                         >
                           View
-                        </button>
+                        </motion.button>
                       </td>
-                    </tr>
+                    </motion.tr>
                   );
                 })}
               </tbody>
@@ -395,11 +430,17 @@ const MetricCard: React.FC<{
   icon: React.ReactNode;
   footer: React.ReactNode;
 }> = ({ label, value, valueSuffix, icon, footer }) => (
-  <div
-    className="rounded-lg p-4"
+  <motion.div
+    variants={{
+      hidden: { opacity: 0, y: 15 },
+      show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 350, damping: 28 } }
+    }}
+    whileHover={{ y: -4, scale: 1.02, transition: { type: "spring", stiffness: 400, damping: 25 } }}
+    className="rounded-lg p-5"
     style={{
       background: 'var(--color-surface)',
       border: '1px solid var(--color-border)',
+      boxShadow: 'var(--shadow-xs)'
     }}
   >
     <div className="flex items-center justify-between mb-2">
@@ -421,7 +462,7 @@ const MetricCard: React.FC<{
     <div className="pt-2" style={{ borderTop: '1px solid var(--color-border-subtle)' }}>
       {footer}
     </div>
-  </div>
+  </motion.div>
 );
 
 const LegendItem: React.FC<{ color: string; label: string; count: number }> = ({ color, label, count }) => (

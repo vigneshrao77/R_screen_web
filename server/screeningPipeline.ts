@@ -12,23 +12,23 @@ export interface ExecuteScreeningInput {
 }
 
 export async function processScreening(screeningId: string, recruiterEmail: string): Promise<Screening> {
-  const screening = db.getScreeningById(screeningId);
+  const screening = await db.getScreeningById(screeningId);
   if (!screening) {
     throw new Error(`Screening ${screeningId} not found`);
   }
 
-  const job = db.getJobById(screening.jobId);
+  const job = await db.getJobById(screening.jobId);
   if (!job) {
     throw new Error(`Associated job ${screening.jobId} not found`);
   }
 
-  const candidate = db.getCandidateById(screening.candidateId);
+  const candidate = await db.getCandidateById(screening.candidateId);
   if (!candidate) {
     throw new Error(`Candidate ${screening.candidateId} not found`);
   }
 
   // Update status to extracting
-  db.updateScreening(screeningId, {
+  await db.updateScreening(screeningId, {
     status: 'extracting',
     statusMessage: 'Extracting text and structure from PDF resume...',
     error: null
@@ -46,12 +46,12 @@ export async function processScreening(screeningId: string, recruiterEmail: stri
     console.log(`[Screening Pipeline] Extracting text for ${candidate.fullName}...`);
     const extractedText = await extractTextFromPdf(pdfBuffer);
 
-    db.updateCandidate(candidate.id, {
+    await db.updateCandidate(candidate.id, {
       extractedTextLength: extractedText.length
     });
 
     // 2. n8n workflow trigger
-    db.updateScreening(screeningId, {
+    await db.updateScreening(screeningId, {
       status: 'n8n_triggered',
       statusMessage: 'Triggering n8n workflow webhook for automated notifications & Notion sync...'
     });
@@ -65,7 +65,7 @@ export async function processScreening(screeningId: string, recruiterEmail: stri
     });
 
     // 3. Gemini AI structured evaluation
-    db.updateScreening(screeningId, {
+    await db.updateScreening(screeningId, {
       status: 'ai_evaluating',
       statusMessage: 'Screening candidate against job criteria with Gemini AI Agent...',
       n8nExecution: n8nRecord
@@ -81,7 +81,7 @@ export async function processScreening(screeningId: string, recruiterEmail: stri
 
     // 4. Save completed result
     const completedAt = new Date().toISOString();
-    const updated = db.updateScreening(screeningId, {
+    const updated = await db.updateScreening(screeningId, {
       status: 'completed',
       statusMessage: 'AI screening complete and candidate report generated.',
       result: structuredResult,
@@ -90,7 +90,7 @@ export async function processScreening(screeningId: string, recruiterEmail: stri
     });
 
     // Audit log
-    db.addAuditLog({
+    await db.addAuditLog({
       recruiterEmail,
       action: 'SCREENING_COMPLETED',
       entityType: 'screening',
@@ -101,14 +101,14 @@ export async function processScreening(screeningId: string, recruiterEmail: stri
     return updated!;
   } catch (err: any) {
     console.error(`[Screening Pipeline] Error processing ${screeningId}:`, err);
-    const updated = db.updateScreening(screeningId, {
+    const updated = await db.updateScreening(screeningId, {
       status: 'failed',
       statusMessage: 'Screening failed',
       error: err.message || 'Unknown processing error',
       retryCount: screening.retryCount + 1
     });
 
-    db.addAuditLog({
+    await db.addAuditLog({
       recruiterEmail,
       action: 'SCREENING_FAILED',
       entityType: 'screening',

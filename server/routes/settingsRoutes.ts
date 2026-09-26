@@ -5,21 +5,21 @@ import { authMiddleware, AuthenticatedRequest } from '../middleware/auth.js';
 const router = Router();
 router.use(authMiddleware);
 
-router.get('/', (_req: AuthenticatedRequest, res: Response) => {
-  const settings = db.getSettings();
+router.get('/', async (_req: AuthenticatedRequest, res: Response) => {
+  const settings = await db.getSettings();
   return res.json(settings);
 });
 
-router.post('/', (req: AuthenticatedRequest, res: Response) => {
+router.post('/', async (req: AuthenticatedRequest, res: Response): Promise<any> => {
   const { n8nWebhookUrl, n8nEnabled, defaultJobId, companyName } = req.body;
-  const updated = db.updateSettings({
+  const updated = await db.updateSettings({
     n8nWebhookUrl: typeof n8nWebhookUrl === 'string' ? n8nWebhookUrl.trim() : undefined,
     n8nEnabled: typeof n8nEnabled === 'boolean' ? n8nEnabled : undefined,
     defaultJobId: typeof defaultJobId === 'string' ? defaultJobId : undefined,
     companyName: typeof companyName === 'string' ? companyName : undefined
   });
 
-  db.addAuditLog({
+  await db.addAuditLog({
     recruiterEmail: req.user!.email,
     action: 'SETTINGS_UPDATED',
     entityType: 'settings',
@@ -31,9 +31,10 @@ router.post('/', (req: AuthenticatedRequest, res: Response) => {
 });
 
 // Test connection to n8n webhook URL
-router.post('/test-n8n', async (req: AuthenticatedRequest, res: Response) => {
+router.post('/test-n8n', async (req: AuthenticatedRequest, res: Response): Promise<any> => {
   const { url } = req.body;
-  const targetUrl = url || db.getSettings().n8nWebhookUrl;
+  const settings = await db.getSettings();
+  const targetUrl = url || (settings ? settings.n8nWebhookUrl : '');
 
   if (!targetUrl) {
     return res.status(400).json({ success: false, message: 'No n8n Webhook URL provided.' });

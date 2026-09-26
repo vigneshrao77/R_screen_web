@@ -9,6 +9,7 @@ import {
   Clock,
   Layers
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 export const JobCriteria: React.FC = () => {
   const [jobs, setJobs] = useState<JobDescription[]>([]);
@@ -113,7 +114,9 @@ export const JobCriteria: React.FC = () => {
           </p>
         </div>
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           onClick={() => setShowCreateModal(true)}
           className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-[13px] font-semibold transition-colors self-start sm:self-auto"
           style={{
@@ -125,7 +128,7 @@ export const JobCriteria: React.FC = () => {
         >
           <Plus className="w-3.5 h-3.5" />
           <span>Add Job</span>
-        </button>
+        </motion.button>
       </div>
 
       {error && (
@@ -165,12 +168,25 @@ export const JobCriteria: React.FC = () => {
             </span>
           </div>
 
-          <div className="divide-y max-h-[600px] overflow-y-auto" style={{ borderColor: 'var(--color-border-subtle)' }}>
+          <motion.div 
+            className="divide-y max-h-[600px] overflow-y-auto" 
+            style={{ borderColor: 'var(--color-border-subtle)' }}
+            initial="hidden"
+            animate="show"
+            variants={{
+              hidden: { opacity: 0 },
+              show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+            }}
+          >
             {jobs.map(j => {
               const isSelected = selectedJob?.id === j.id;
               return (
-                <div
+                <motion.div
                   key={j.id}
+                  variants={{
+                    hidden: { opacity: 0, x: -10 },
+                    show: { opacity: 1, x: 0 }
+                  }}
                   onClick={() => setSelectedJob(j)}
                   className="p-3.5 cursor-pointer transition-colors"
                   style={{
@@ -193,10 +209,10 @@ export const JobCriteria: React.FC = () => {
                   <div className="text-[11px] mt-1.5 line-clamp-2" style={{ color: 'var(--color-text-muted)' }}>
                     {j.roleOverview}
                   </div>
-                </div>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         </div>
 
         {/* Job Details */}
@@ -360,21 +376,30 @@ export const JobCriteria: React.FC = () => {
       </div>
 
       {/* Create Modal */}
-      {showCreateModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{ background: 'rgba(0,0,0,0.4)' }}
-        >
-          <div
-            className="rounded-xl max-w-xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto"
-            style={{
-              background: 'var(--color-surface)',
-              boxShadow: 'var(--shadow-lg)',
-            }}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="create-job-title"
+      <AnimatePresence>
+        {showCreateModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: 'rgba(0,0,0,0.4)' }}
           >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ duration: 0.2 }}
+              className="rounded-xl max-w-xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto"
+              style={{
+                background: 'var(--color-surface)',
+                boxShadow: 'var(--shadow-lg)',
+              }}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="create-job-title"
+            >
             <div className="flex items-center justify-between pb-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
               <h2 id="create-job-title" className="text-[15px] font-semibold" style={{ color: 'var(--color-text-primary)' }}>
                 Add Job Criteria
@@ -514,9 +539,10 @@ export const JobCriteria: React.FC = () => {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

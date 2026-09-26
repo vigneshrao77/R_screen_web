@@ -37,7 +37,7 @@ const upload = multer({
 router.use(authMiddleware);
 
 // Upload and screen
-router.post('/upload', upload.single('resume'), async (req: AuthenticatedRequest, res: Response) => {
+router.post('/upload', upload.single('resume'), async (req: AuthenticatedRequest, res: Response): Promise<any> => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No PDF resume file provided. Please upload a .pdf file.' });
@@ -60,17 +60,25 @@ router.post('/upload', upload.single('resume'), async (req: AuthenticatedRequest
     }
 
     // Check target job
-    const targetJobId = jobId || db.getSettings().defaultJobId;
-    const targetJob = db.getJobById(targetJobId) || db.getJobs()[0];
+    const settings = await db.getSettings();
+    const targetJobId = jobId || (settings ? settings.defaultJobId : null);
+    
+    let targetJob = targetJobId ? await db.getJobById(targetJobId) : null;
+    if (!targetJob) {
+      const jobs = await db.getJobs();
+      targetJob = jobs[0];
+    }
+    
     if (!targetJob) {
       return res.status(400).json({ error: 'No active job description found to screen against.' });
     }
 
     // Duplicate check
-    const existingCandidate = db.findCandidateByEmailOrPhone(trimmedEmail, trimmedPhone);
+    const existingCandidate = await db.findCandidateByEmailOrPhone(trimmedEmail, trimmedPhone);
     if (existingCandidate && allowDuplicate !== 'true') {
       // Find if they already have a screening for this job
-      const existingScreening = db.getScreenings().find(
+      const screenings = await db.getScreenings();
+      const existingScreening = screenings.find(
         s => s.candidateId === existingCandidate.id && s.jobId === targetJob.id
       );
 
@@ -85,7 +93,7 @@ router.post('/upload', upload.single('resume'), async (req: AuthenticatedRequest
     // Create or use candidate
     let candidate = existingCandidate;
     if (!candidate) {
-      candidate = db.addCandidate({
+      candidate = await db.addCandidate({
         fullName: trimmedName,
         email: trimmedEmail,
         phone: trimmedPhone || 'Not provided',
@@ -96,18 +104,17 @@ router.post('/upload', upload.single('resume'), async (req: AuthenticatedRequest
       });
     } else {
       // Update candidate file
-      candidate = db.updateCandidate(candidate.id, {
+      candidate = await db.updateCandidate(candidate.id, {
         fullName: trimmedName || candidate.fullName,
         resumeFilename: req.file.filename,
         resumePath: req.file.path,
         fileSize: req.file.size
-      })!;
+      });
     }
 
     // Create screening record
-    const screening = db.addScreening({
+    const screening = await db.addScreening({
       candidateId: candidate.id,
-      candidate,
       jobId: targetJob.id,
       jobTitle: targetJob.title,
       status: 'pending',
@@ -120,7 +127,7 @@ router.post('/upload', upload.single('resume'), async (req: AuthenticatedRequest
       completedAt: null
     });
 
-    db.addAuditLog({
+    await db.addAuditLog({
       recruiterEmail: req.user!.email,
       action: 'RESUME_UPLOADED',
       entityType: 'screening',
@@ -139,7 +146,7 @@ router.post('/upload', upload.single('resume'), async (req: AuthenticatedRequest
 });
 
 // List screenings with search & filter
-router.get('/', (req: AuthenticatedRequest, res: Response) => {
+router.get('/', async (req: AuthenticatedRequest, res: Response): Promise<any> => {
   const {
     search = '',
     jobId = '',
@@ -150,16 +157,7 @@ router.get('/', (req: AuthenticatedRequest, res: Response) => {
     sortOrder = 'desc'
   } = req.query as Record<string, string>;
 
-  let list = db.getScreenings();
-
-  // Populate candidate details if missing
-  list = list.map(s => {
-    if (!s.candidate) {
-      const c = db.getCandidateById(s.candidateId);
-      if (c) s.candidate = c;
-    }
-    return s;
-  });
+  let list = await db.getScreenings();
 
   if (search) {
     const q = search.toLowerCase();
@@ -213,17 +211,13 @@ router.get('/', (req: AuthenticatedRequest, res: Response) => {
 });
 
 // Single screening detail
-router.get('/:id', (req: AuthenticatedRequest, res: Response) => {
-  const screening = db.getScreeningById(req.params.id);
+router.get('/:id', async (req: AuthenticatedRequest, res: Response): Promise<any> => {
+  const screening = await db.getScreeningById(req.params.id);
   if (!screening) {
     return res.status(404).json({ error: 'Screening record not found.' });
   }
 
-  if (!screening.candidate) {
-    screening.candidate = db.getCandidateById(screening.candidateId)!;
-  }
-
-  const job = db.getJobById(screening.jobId);
+  const job = await db.getJobById(screening.jobId);
 
   return res.json({
     ...screening,
@@ -232,13 +226,13 @@ router.get('/:id', (req: AuthenticatedRequest, res: Response) => {
 });
 
 // Retry failed or re-screen candidate
-router.post('/:id/retry', async (req: AuthenticatedRequest, res: Response) => {
-  const screening = db.getScreeningById(req.params.id);
+router.post('/:id/retry', async (req: AuthenticatedRequest, res: Response): Promise<any> => {
+  const screening = await db.getScreeningById(req.params.id);
   if (!screening) {
     return res.status(404).json({ error: 'Screening not found' });
   }
 
-  db.addAuditLog({
+  await db.addAuditLog({
     recruiterEmail: req.user!.email,
     action: 'SCREENING_RETRY_INITIATED',
     entityType: 'screening',
@@ -255,13 +249,13 @@ router.post('/:id/retry', async (req: AuthenticatedRequest, res: Response) => {
 });
 
 // Download / View original PDF resume
-router.get('/:id/resume', (req: AuthenticatedRequest, res: Response) => {
-  const screening = db.getScreeningById(req.params.id);
+router.get('/:id/resume', async (req: AuthenticatedRequest, res: Response): Promise<any> => {
+  const screening = await db.getScreeningById(req.params.id);
   if (!screening) {
     return res.status(404).json({ error: 'Screening record not found' });
   }
 
-  const candidate = db.getCandidateById(screening.candidateId);
+  const candidate = await db.getCandidateById(screening.candidateId);
   if (!candidate || !candidate.resumeFilename) {
     return res.status(404).json({ error: 'Resume file not found for this candidate' });
   }
@@ -279,15 +273,15 @@ router.get('/:id/resume', (req: AuthenticatedRequest, res: Response) => {
 });
 
 // Delete screening
-router.delete('/:id', (req: AuthenticatedRequest, res: Response) => {
-  const screening = db.getScreeningById(req.params.id);
+router.delete('/:id', async (req: AuthenticatedRequest, res: Response): Promise<any> => {
+  const screening = await db.getScreeningById(req.params.id);
   if (!screening) {
     return res.status(404).json({ error: 'Screening record not found' });
   }
 
-  db.deleteScreening(req.params.id);
+  await db.deleteScreening(req.params.id);
 
-  db.addAuditLog({
+  await db.addAuditLog({
     recruiterEmail: req.user!.email,
     action: 'SCREENING_DELETED',
     entityType: 'screening',
