@@ -30,10 +30,6 @@ export async function connectDB() {
   }
   
   try {
-    // Also ensure DNS servers are active before connecting
-    try {
-      dns.setServers(['8.8.8.8', '1.1.1.1']);
-    } catch (_) {}
     await mongoose.connect(process.env.MONGODB_URI);
     console.log('[MongoDB] Connected successfully');
     await seedDatabase();

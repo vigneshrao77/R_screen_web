@@ -2,7 +2,7 @@ export type RecommendationType = 'Strong Hire' | 'Shortlist' | 'Consider' | 'Rej
 export type RiskScoreType = 'Low' | 'Medium' | 'High';
 export type RewardScoreType = 'Low' | 'Medium' | 'High';
 
-export type ScreeningStatus = 
+type ScreeningStatus = 
   | 'pending'
   | 'extracting'
   | 'n8n_triggered'

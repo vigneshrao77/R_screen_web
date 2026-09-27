@@ -6,10 +6,6 @@ import { evaluateResumeWithGemini } from './gemini.js';
 import { triggerN8nWorkflow } from './n8nService.js';
 import { Screening, Candidate } from '../src/types/index.js';
 
-export interface ExecuteScreeningInput {
-  screeningId: string;
-  recruiterEmail: string;
-}
 
 export async function processScreening(screeningId: string, recruiterEmail: string): Promise<Screening> {
   const screening = await db.getScreeningById(screeningId);

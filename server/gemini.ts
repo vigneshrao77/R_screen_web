@@ -3,7 +3,7 @@ import { GoogleGenAI, Type } from '@google/genai';
 import { StructuredScreeningResult } from '../src/types/index.js';
 
 let _aiClient: GoogleGenAI | null = null;
-export function getAiClient(): GoogleGenAI {
+function getAiClient(): GoogleGenAI {
   if (!_aiClient) {
     if (!process.env.GEMINI_API_KEY) {
       console.warn('GEMINI_API_KEY is missing from environment variables');
@@ -51,7 +51,7 @@ Assign a number between 0 (terrible match) and 10 (perfect match). Do not give d
 ### Justification for Rating:
 Explain clearly why this candidate received that score. Reference specific resume content and how it aligns or doesn't with the job description.`;
 
-export const STRUCTURED_OUTPUT_SCHEMA = {
+const STRUCTURED_OUTPUT_SCHEMA = {
   type: Type.OBJECT,
   properties: {
     candidate_name: {
